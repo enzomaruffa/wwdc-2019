@@ -1,19 +1,19 @@
-
-//createMainNode
-//createYinYang
-//createBall
 import PlaygroundSupport
 import SpriteKit
 
-let CIRCLE_RADIUS = CGFloat(350)
+let CIRCLE_RADIUS = CGFloat(275)
 let CIRCLE_CENTER = CGPoint(x: 0, y: 0)
 let SCREEN_WIDTH = CGFloat(800)
 let SCREEN_HEIGHT = CGFloat(600)
+let ARC_WIDTH = CGFloat(6)
 
 let ICE_WHITE = SKColor.init(red: 0.85, green: 0.85, blue: 0.85, alpha: 1.0)
 
 let mainNode = SKNode()
 var ballNode : SKShapeNode!
+var padsContainerNode : SKShapeNode!
+var leftButtonNode : SKShapeNode!
+var rightButtonNode : SKShapeNode!
 var currentZRotation = CGFloat(0.0);
 
 func degreeToRad(degree: CGFloat) -> CGFloat {
@@ -76,9 +76,10 @@ func setDefaultPhysicalProperties(body: SKPhysicsBody, bitmask: UInt32) {
 }
 
 func generateRandomBallMovement() {
-    let rand1 = Double.random(in: 1.0...4.0)
+    let rand1 = Double.random(in:-3.0...3.0)
+    let rand2 = Double.random(in:-3.0...3.0)
     ballNode.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-    ballNode.physicsBody?.applyForce(CGVector(dx: CGFloat(rand1 * 1000), dy: CGFloat(rand1 * 100)))
+    ballNode.physicsBody?.applyForce(CGVector(dx: CGFloat(rand1 * 600), dy: CGFloat(rand2 * 600)))
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -105,7 +106,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         mainNode.addChild(blackSideNode)
         
         //
-        let rightPath = createSemicirclePath(width: 6, startAngle: degreeToRad(degree: 91), endAngle: degreeToRad(degree: 271), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
+        let rightPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 60), endAngle: degreeToRad(degree: 300), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
         
         let rightArcNode = SKShapeNode(path: rightPath)
         rightArcNode.strokeColor = ICE_WHITE
@@ -117,7 +118,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         mainNode.addChild(rightArcNode)
         
         
-        let leftPath = createSemicirclePath(width: 6, startAngle: degreeToRad(degree: 271), endAngle: degreeToRad(degree: 91), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
+       let leftPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 240), endAngle: degreeToRad(degree: 120), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
         
         let leftArcNode = SKShapeNode(path: leftPath)
         leftArcNode.strokeColor = ICE_WHITE
@@ -152,10 +153,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //
         
+        let origin = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.2, center: CIRCLE_CENTER, angle: degreeToRad(degree: 260))
+        let end = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.2, center: CIRCLE_CENTER, angle: degreeToRad(degree: 80))
+        
+        let size = CGSize(width: abs(origin.x - end.x), height: abs(origin.y - end.y))
+        
+        padsContainerNode = SKShapeNode(rect: CGRect(origin: origin, size: size))
+        padsContainerNode.fillColor = SKColor.red
+        mainNode.addChild(padsContainerNode)
+        
+        let whitePadPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 80), endAngle: degreeToRad(degree: 100), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        
+        let whitePadNode = SKShapeNode(path: whitePadPath)
+        whitePadNode.strokeColor = ICE_WHITE
+        whitePadNode.fillColor = SKColor.gray
+        
+        let whitePadPhysicsBody = SKPhysicsBody(polygonFrom: whitePadPath)
+        setDefaultPhysicalProperties(body: whitePadPhysicsBody, bitmask: 0x00000001)
+        whitePadNode.physicsBody = whitePadPhysicsBody
+        padsContainerNode.addChild(whitePadNode)
+        
+        let blackPadPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 260), endAngle: degreeToRad(degree: 280), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        
+        let blackPadNode = SKShapeNode(path: blackPadPath)
+        blackPadNode.strokeColor = ICE_WHITE
+        blackPadNode.fillColor = SKColor.gray
+        
+        let blackPadPhysicsBody = SKPhysicsBody(polygonFrom: blackPadPath)
+        setDefaultPhysicalProperties(body: blackPadPhysicsBody, bitmask: 0x00000001)
+        blackPadNode.physicsBody = blackPadPhysicsBody
+        padsContainerNode.addChild(blackPadNode)
+        
+        //
+        
         ballNode = createBall(p: CIRCLE_CENTER, radius: CIRCLE_RADIUS*0.05)
         ballNode.fillColor = ICE_WHITE
         ballNode.strokeColor = SKColor.black
-        mainNode.addChild(ballNode)
+        self.addChild(ballNode)
         
         let ballNodePhysicsBody = SKPhysicsBody(circleOfRadius: CIRCLE_RADIUS*0.05)
         setDefaultPhysicalProperties(body: ballNodePhysicsBody, bitmask: 0x00000011)
@@ -163,7 +197,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ballNode.physicsBody = ballNodePhysicsBody
         
         let rand1 = Double.random(in: 1.0...4.0)
-        ballNode.physicsBody?.applyForce(CGVector(dx: CGFloat(rand1 * 1000), dy: CGFloat(rand1 * 100)))
+        ballNode.physicsBody?.applyForce(CGVector(dx: CGFloat(rand1 * 1000), dy: CGFloat(rand1 * 1000)))
+        
+        leftButtonNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*1.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 180)), radius: 50)
+        leftButtonNode.fillColor = SKColor.red
+        self.addChild(leftButtonNode)
+        
+        rightButtonNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*1.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0)), radius: 50)
+        rightButtonNode.fillColor = SKColor.blue
+        self.addChild(rightButtonNode)
     }
     
     @objc static override var supportsSecureCoding: Bool {
@@ -190,7 +232,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let touch = touches.first!
         let location = touch.location(in: self)
         
-        if mainNode.contains(location) {
+        if padsContainerNode.contains(location) {
+            //if isBallInside() {
+                ballNode.position = CGPoint(x: 0, y: 0)
+            //}
             generateRandomBallMovement()
         }
         
@@ -211,7 +256,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         mainNode.zRotation = currentZRotation
-        currentZRotation -= degreeToRad(degree: 10/60)
+        currentZRotation -= degreeToRad(degree: 3/60)
         if (currentZRotation > degreeToRad(degree: 360)) {
             currentZRotation = 0;
         }
