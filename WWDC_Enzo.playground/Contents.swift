@@ -311,20 +311,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     /*func didBegin(_ contact: SKPhysicsContact) {
-        let secondNode = contact.bodyB.node as! SKSpriteNode
+        let secondNode = contact.bodyB.node as! SKShapeNode
         
-        if (contact.bodyA.categoryBitMask == ) &&
-            (contact.bodyB.categoryBitMask == ballCategory) {
+        print(contact.bodyA)
+        print(contact.bodyB)
+        
+        if (contact.bodyA.categoryBitMask == BALL_BITMASK) &&
+            (contact.bodyB.categoryBitMask == BORDER_BITMASK) {
             
             let contactPoint = contact.contactPoint
             let contact_y = contactPoint.y
             let target_y = secondNode.position.y
             let margin = secondNode.frame.size.height/2 - 25
             
-            if (contact_y > (target_y - margin)) &&
-                (contact_y < (target_y + margin)) {
-                print("Hit")
-            }
+            print("Hit")
         }
     }*/
 }
