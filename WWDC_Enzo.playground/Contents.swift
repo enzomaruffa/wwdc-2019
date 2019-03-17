@@ -16,9 +16,21 @@ var leftButtonNode : SKShapeNode!
 var rightButtonNode : SKShapeNode!
 var currentZRotation = CGFloat(0.0);
 
+let PAD_STEP = CGFloat(1.4)
+
+let BALL_BITMASK : UInt32 = 0x00000011
+let BORDER_BITMASK : UInt32 = 0x00000001
+let BUMPER_BITMASK : UInt32 = 0x00000010
+
+var movingLeft = false
+var movingRight = false
+
 func degreeToRad(degree: CGFloat) -> CGFloat {
     return 0.01745329252 * degree
 }
+
+var minPadsZRotation = CGFloat(degreeToRad(degree: -19.8));
+var maxPadsZRotation = CGFloat(degreeToRad(degree: +19.8));
 
 //Padrão: ponto mais próximo do centro horiozontal e topo primeiro.
 func createSemicirclePath(width: CGFloat, startAngle: CGFloat, endAngle: CGFloat, center: CGPoint, radius: CGFloat, clockwise: Bool) -> CGMutablePath { //CGPath {
@@ -76,8 +88,8 @@ func setDefaultPhysicalProperties(body: SKPhysicsBody, bitmask: UInt32) {
 }
 
 func generateRandomBallMovement() {
-    let rand1 = Double.random(in:-3.0...3.0)
-    let rand2 = Double.random(in:-3.0...3.0)
+    let rand1 = Int.random(in:-1...1)
+    let rand2 = Int.random(in:-1...1    )
     ballNode.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
     ballNode.physicsBody?.applyForce(CGVector(dx: CGFloat(rand1 * 600), dy: CGFloat(rand2 * 600)))
 }
@@ -113,7 +125,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rightArcNode.fillColor = SKColor.gray
         
         let rightPathPhysicsBody = SKPhysicsBody(polygonFrom: rightPath)
-        setDefaultPhysicalProperties(body: rightPathPhysicsBody, bitmask: 0x00000001)
+        setDefaultPhysicalProperties(body: rightPathPhysicsBody, bitmask: BORDER_BITMASK)
         rightArcNode.physicsBody = rightPathPhysicsBody
         mainNode.addChild(rightArcNode)
         
@@ -125,7 +137,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         leftArcNode.fillColor = SKColor.gray
         
         let leftPathPhysicsBody = SKPhysicsBody(polygonFrom: leftPath)
-        setDefaultPhysicalProperties(body: leftPathPhysicsBody, bitmask: 0x00000001)
+        setDefaultPhysicalProperties(body: leftPathPhysicsBody, bitmask: BORDER_BITMASK)
         leftArcNode.physicsBody = leftPathPhysicsBody
         mainNode.addChild(leftArcNode)
         
@@ -136,7 +148,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         whiteRound.strokeColor = SKColor.black
         
         let whiteRoundPhysicsBody = SKPhysicsBody(circleOfRadius: CIRCLE_RADIUS*0.15)
-        setDefaultPhysicalProperties(body: whiteRoundPhysicsBody, bitmask: 0x00000010)
+        setDefaultPhysicalProperties(body: whiteRoundPhysicsBody, bitmask: BUMPER_BITMASK)
         whiteRound.physicsBody = whiteRoundPhysicsBody
         
         mainNode.addChild(whiteRound)
@@ -146,7 +158,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         blackRound.strokeColor = SKColor.black
         
         let blackRoundPhysicsBody = SKPhysicsBody(circleOfRadius: CIRCLE_RADIUS*0.15)
-        setDefaultPhysicalProperties(body: blackRoundPhysicsBody, bitmask: 0x00000010)
+        setDefaultPhysicalProperties(body: blackRoundPhysicsBody, bitmask: BUMPER_BITMASK)
         blackRound.physicsBody = blackRoundPhysicsBody
         
         mainNode.addChild(blackRound)
@@ -159,17 +171,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let size = CGSize(width: abs(origin.x - end.x), height: abs(origin.y - end.y))
         
         padsContainerNode = SKShapeNode(rect: CGRect(origin: origin, size: size))
-        padsContainerNode.fillColor = SKColor.red
+        padsContainerNode.strokeColor = SKColor.clear
         mainNode.addChild(padsContainerNode)
         
         let whitePadPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 80), endAngle: degreeToRad(degree: 100), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
         
         let whitePadNode = SKShapeNode(path: whitePadPath)
         whitePadNode.strokeColor = ICE_WHITE
-        whitePadNode.fillColor = SKColor.gray
+        whitePadNode.fillColor = SKColor.red
         
         let whitePadPhysicsBody = SKPhysicsBody(polygonFrom: whitePadPath)
-        setDefaultPhysicalProperties(body: whitePadPhysicsBody, bitmask: 0x00000001)
+        setDefaultPhysicalProperties(body: whitePadPhysicsBody, bitmask: BORDER_BITMASK)
         whitePadNode.physicsBody = whitePadPhysicsBody
         padsContainerNode.addChild(whitePadNode)
         
@@ -177,10 +189,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let blackPadNode = SKShapeNode(path: blackPadPath)
         blackPadNode.strokeColor = ICE_WHITE
-        blackPadNode.fillColor = SKColor.gray
+        blackPadNode.fillColor = SKColor.red
         
         let blackPadPhysicsBody = SKPhysicsBody(polygonFrom: blackPadPath)
-        setDefaultPhysicalProperties(body: blackPadPhysicsBody, bitmask: 0x00000001)
+        setDefaultPhysicalProperties(body: blackPadPhysicsBody, bitmask: BORDER_BITMASK)
         blackPadNode.physicsBody = blackPadPhysicsBody
         padsContainerNode.addChild(blackPadNode)
         
@@ -239,14 +251,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             generateRandomBallMovement()
         }
         
+        if leftButtonNode.contains(location) {
+            movingLeft = true
+            movingRight = false
+        } else if rightButtonNode.contains(location) {
+            movingRight = true
+            movingLeft = false
+        }
+        
+        print(movingLeft)
+        print(movingRight)
+        
         for t in touches { touchDown(atPoint: t.location(in: self)) }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         for t in touches { touchMoved(toPoint: t.location(in: self)) }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        let touch = touches.first!
+        let location = touch.location(in: self)
+        
+        movingRight = false
+        movingLeft = false
+        
         for t in touches { touchUp(atPoint: t.location(in: self)) }
     }
     
@@ -260,7 +291,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if (currentZRotation > degreeToRad(degree: 360)) {
             currentZRotation = 0;
         }
+        
+        if movingLeft {
+            if padsContainerNode.zRotation - degreeToRad(degree: PAD_STEP) > minPadsZRotation {
+                padsContainerNode.zRotation -= degreeToRad(degree: PAD_STEP)
+            }
+        } else if movingRight {
+            if padsContainerNode.zRotation + degreeToRad(degree: PAD_STEP) < maxPadsZRotation {
+                padsContainerNode.zRotation += degreeToRad(degree: PAD_STEP)
+            }
+        }
+        
+        if !mainNode.contains(ballNode.position) {
+            //if isBallInside() {
+            ballNode.position = CGPoint(x: 0, y: 0)
+            //}
+            generateRandomBallMovement()
+        }
     }
+    
+    /*func didBegin(_ contact: SKPhysicsContact) {
+        let secondNode = contact.bodyB.node as! SKSpriteNode
+        
+        if (contact.bodyA.categoryBitMask == ) &&
+            (contact.bodyB.categoryBitMask == ballCategory) {
+            
+            let contactPoint = contact.contactPoint
+            let contact_y = contactPoint.y
+            let target_y = secondNode.position.y
+            let margin = secondNode.frame.size.height/2 - 25
+            
+            if (contact_y > (target_y - margin)) &&
+                (contact_y < (target_y + margin)) {
+                print("Hit")
+            }
+        }
+    }*/
 }
 
 // Load the SKScene from 'GameScene.sks'
