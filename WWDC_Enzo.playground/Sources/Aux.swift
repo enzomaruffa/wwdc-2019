@@ -101,8 +101,8 @@ public func setDefaultPhysicalProperties(body: SKPhysicsBody, bitmask: UInt32) {
 }
 
 public func generateRandomBallMovement(ballNode : SKShapeNode) {
-    let rand1 = Int.random(in:-1...1)
-    let rand2 = Int.random(in:-1...1)
+    let dx = Int.random(in:-1000...1000)
+    let dy = abs(dx) - STARTING_BALL_SPEED
     ballNode.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-    ballNode.physicsBody?.applyForce(CGVector(dx: CGFloat(rand1 * 600), dy: CGFloat(rand2 * 600)))
+    ballNode.physicsBody?.applyForce(CGVector(dx: CGFloat(dx), dy: CGFloat(dy)))
 }

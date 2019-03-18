@@ -11,6 +11,8 @@ public let BALL_BITMASK : UInt32 = 0x00000011
 public let BORDER_BITMASK : UInt32 = 0x00000001
 public let BUMPER_BITMASK : UInt32 = 0x00000010
 public let PAD_BITMASK : UInt32 = 0x00000100
+public let PAD_LEFT_DIRECTED_BITMASK : UInt32 = 0x00000101
+public let PAD_RIGHT_DIRECTED_BITMASK : UInt32 = 0x00000111
 
 public let CIRCLE_RADIUS = CGFloat(275)
 public let CIRCLE_CENTER = CGPoint(x: 0, y: 0)
@@ -25,5 +27,7 @@ public let BLACK_SIDE_COLOR = SKColor.init(red: 0.15, green: 0.15, blue: 0.15, a
 public let BORDER_COLOR = SKColor.black
 
 public var PAD_SIZE = CGFloat(20)
-public var PAD_DIRECTED_HIT_PROPORTION = CGFloat(0.35)
+public var PAD_CENTRAL_PROPORTION = CGFloat(0.7)
 public var BORDER_SIZE = CGFloat(120)
+
+public let STARTING_BALL_SPEED = 1000
