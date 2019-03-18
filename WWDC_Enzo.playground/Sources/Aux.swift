@@ -2,6 +2,8 @@ import Foundation
 import PlaygroundSupport
 import SpriteKit
 
+public var currentBallSpeed = CGFloat(0)
+
 public func degreeToRad(degree: CGFloat) -> CGFloat {
     return 0.01745329252 * degree
 }
@@ -56,9 +58,9 @@ public func createBall(p: CGPoint, radius: CGFloat) -> SKShapeNode {
     return ballNode
 }
 
-public func accelerateBall(ball: SKPhysicsBody) {
+public func accelerateBall(ball: SKPhysicsBody, proportion: CGFloat) {
     let velocity = ball.velocity
-    let newVelocity = CGVector(dx: velocity.dx * BUMPER_SPEED_FACTOR, dy: velocity.dy * BUMPER_SPEED_FACTOR)
+    let newVelocity = CGVector(dx: velocity.dx * proportion, dy: velocity.dy * proportion)
     ball.velocity = newVelocity
 }
 
@@ -101,8 +103,43 @@ public func setDefaultPhysicalProperties(body: SKPhysicsBody, bitmask: UInt32) {
 }
 
 public func generateRandomBallMovement(ballNode : SKShapeNode) {
-    let dx = Int.random(in:-1000...1000)
-    let dy = abs(dx) - STARTING_BALL_SPEED
-    ballNode.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-    ballNode.physicsBody?.applyForce(CGVector(dx: CGFloat(dx), dy: CGFloat(dy)))
+    ballNode.physicsBody?.velocity = CGVector(dx:STARTING_BALL_SPEED, dy:0)
+    let randomDirection = Double.random(in: 0...360)
+    let p = getCirclePointByAngle(radius: CIRCLE_RADIUS, center: CIRCLE_CENTER, angle: degreeToRad(degree: CGFloat(randomDirection)))
+    
+    directBallTo(ball: ballNode.physicsBody!, p: p)
+}
+
+public func directBallTo(ball : SKPhysicsBody, p : CGPoint) {
+    print("Current velocity")
+    print(ball.velocity)
+    let speed = getBallSpeed(v: ball.velocity)
+    print("Current speed")
+    print(speed)
+    let nv = normalizeVector(v: CGVector(dx: p.x, dy: p.y))
+    print("nv")
+    print(nv)
+    let speedFactor = speed/(abs(nv.dx)+abs(nv.dy))
+    print("Speed factor")
+    print(speedFactor)
+    let v = CGVector(dx: nv.dx*speedFactor, dy: nv.dy*speedFactor)
+    print("v")
+    print(v)
+    ball.velocity = CGVector(dx:0, dy:0)
+    ball.velocity = v
+    print("New velocity")
+    print(getBallSpeed(v: ball.velocity))
+}
+
+public func normalizeVector(v : CGVector) -> CGVector {
+    let vectorSize = sqrt(v.dx * v.dx + v.dy + v.dy)
+    return CGVector(dx: v.dx/vectorSize, dy: v.dy/vectorSize)
+}
+
+public func startGame(ballNode: SKShapeNode) {
+    generateRandomBallMovement(ballNode: ballNode)
+}
+
+public func getBallSpeed(v:CGVector) -> CGFloat {
+    return abs(v.dx) + abs(v.dy)
 }
