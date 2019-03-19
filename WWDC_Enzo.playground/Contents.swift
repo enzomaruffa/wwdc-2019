@@ -99,7 +99,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let whitePadMiddleEndAngle = degreeToRad(degree: 90+(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
         let whitePadBorder2EndAngle = degreeToRad(degree: 90+PAD_SIZE/2)
         
-        let whitePadBorder1Path = createSemicirclePath(width: ARC_WIDTH, startAngle: whitePadBorder1StartAngle, endAngle: whitePadBorder1EndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        let whitePadBorder1Path = createSemicirclePath(width: ARC_WIDTH, startAngle: whitePadBorder1StartAngle, endAngle: whitePadBorder1EndAngle - degreeToRad(degree: 1), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
         
         let whitePadBorder1Node = SKShapeNode(path: whitePadBorder1Path)
         whitePadBorder1Node.strokeColor = PAD_OUTSIDE_COLOR
@@ -110,11 +110,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         whitePadBorder1Node.physicsBody = whitePadBorder1PhysicsBody
         padsContainerNode.addChild(whitePadBorder1Node)
         
-        let whitePadMiddlePath = createSemicirclePath(width: ARC_WIDTH, startAngle: whitePadBorder1EndAngle - degreeToRad(degree: 1), endAngle: whitePadMiddleEndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        let whitePadMiddlePath = createSemicirclePath(width: ARC_WIDTH, startAngle: whitePadBorder1EndAngle, endAngle: whitePadMiddleEndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
         
         let whitePadMiddleNode = SKShapeNode(path: whitePadMiddlePath)
         whitePadMiddleNode.strokeColor = PAD_OUTSIDE_COLOR
-        whitePadMiddleNode.fillColor = WHITE_SIDE_COLOR
+        whitePadMiddleNode.fillColor = PAD_INSIDE_COLOR
         
         let whitePadMiddlePhysicsBody = SKPhysicsBody(polygonFrom: whitePadMiddlePath)
         setDefaultPhysicalProperties(body: whitePadMiddlePhysicsBody, bitmask: PAD_RIGHT_DIRECTED_BITMASK)
@@ -154,7 +154,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let blackPadMiddleNode = SKShapeNode(path: blackPadMiddlePath)
         blackPadMiddleNode.strokeColor = PAD_OUTSIDE_COLOR
-        blackPadMiddleNode.fillColor = WHITE_SIDE_COLOR
+        blackPadMiddleNode.fillColor = PAD_INSIDE_COLOR
         
         let blackPadMiddlePhysicsBody = SKPhysicsBody(polygonFrom: blackPadMiddlePath)
         setDefaultPhysicalProperties(body: blackPadMiddlePhysicsBody, bitmask: PAD_BITMASK)
@@ -225,25 +225,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches[count-1]!
-        let location = touch.location(in: self)
-        
-        if padsContainerNode.contains(location) {
-            //if isBallInside() {
-            ballNode.position = CGPoint(x: 0, y: 0)
-            //}
-            MAIN_NODE_ROTATION = MAIN_NODE_ROTATION_ORIGINAL
-            generateRandomBallMovement(ballNode: ballNode)
+        for touch in touches {
+            
+            let location = touch.location(in: self)
+            
+            if padsContainerNode.contains(location) {
+                //if isBallInside() {
+                ballNode.position = CGPoint(x: 0, y: 0)
+                //}
+                MAIN_NODE_ROTATION = MAIN_NODE_ROTATION_ORIGINAL
+                generateRandomBallMovement(ballNode: ballNode)
+            }
+            
+            if leftButtonNode.contains(location) {
+                movingLeft = true
+                movingRight = false
+            } else if rightButtonNode.contains(location) {
+                movingRight = true
+                movingLeft = false
+            }
+            
         }
-        
-        if leftButtonNode.contains(location) {
-            movingLeft = true
-            movingRight = false
-        } else if rightButtonNode.contains(location) {
-            movingRight = true
-            movingLeft = false
-        }
-        
         //print(movingLeft)
         //print(movingRight)
         
