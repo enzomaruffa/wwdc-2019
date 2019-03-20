@@ -77,7 +77,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //
         
-        whiteBumperNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 180)), radius: BUMPER_RADIUS)
+        whiteBumperNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0)), radius: BUMPER_RADIUS)
         whiteBumperNode.fillColor = WHITE_SIDE_COLOR
         whiteBumperNode.strokeColor = WHITE_SIDE_COLOR
         
@@ -87,7 +87,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         mainNode.addChild(whiteBumperNode)
         
-        blackBumperNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: 0), radius: BUMPER_RADIUS)
+        blackBumperNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: 180), radius: BUMPER_RADIUS)
         blackBumperNode.fillColor = BLACK_SIDE_COLOR
         blackBumperNode.strokeColor = BLACK_SIDE_COLOR
         
@@ -242,14 +242,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let touch = Array(touches)[touches.count-1]
         let location = touch.location(in: self)
         
-        if padsContainerNode.contains(location) {
-            //if isBallInside() {
-            ballNode.position = CGPoint(x: 0, y: 0)
-            //}
-            MAIN_NODE_ROTATION = MAIN_NODE_ROTATION_ORIGINAL
-            generateRandomBallMovement(ballNode: ballNode)
-        }
-        
         if leftButtonNode.contains(location) {
             movingLeft = false
             movingRight = true
@@ -306,13 +298,15 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let speed = getBallSpeed(v: (ballNode.physicsBody?.velocity)!)
         
         if speed <= 10 && !mainNode.contains(ballNode.position) { // caso reset
-            ballNode.run(SKAction.fadeIn(withDuration: 0.01))
+            ballNode.run(SKAction.fadeIn(withDuration: 0.5))
             ballNode.physicsBody?.linearDamping = 0.0
             ballNode.position = CGPoint(x: 0, y: 0)
-            generateRandomBallMovement(ballNode: ballNode)
             rightArcNode.position = originalRightBorderPosition
             leftArcNode.position = originalLeftBorderPosition
             currentBallSpeedFactor = 1
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                generateRandomBallMovement(ballNode: ballNode)
+            })
         } else if speed > 105 && !mainNode.contains(ballNode.position) { // caso saia, desacelera
             MAIN_NODE_ROTATION = max(MAIN_NODE_ROTATION/2.5, MAIN_NODE_ROTATION_ORIGINAL)
             ballNode.physicsBody?.linearDamping = 0.96
@@ -354,12 +348,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             directBallTo(ball: ball, p: target)
             accelerateBall(ball: ball, proportion: (STARTING_BALL_SPEED * currentBallSpeedFactor / getBallSpeed(v: ball.velocity)))
             
-            var pling : SKAudioNode
-            pling = SKAudioNode(fileNamed: "Teco.mp3")
-            pling.autoplayLooped = false
-            pling.run(SKAction.changeVolume(to: Float(1.0), duration: 0))
-            self.addChild(pling)
-            pling.run(SKAction.play())
+     
+            playSoundEffect(mainNode: self, fileName: "Teco.mp3", volume: 0.5)
             
         } else if (contact.bodyA.contactTestBitMask == BALL_BITMASK) &&
             (contact.bodyB.contactTestBitMask == PAD_RIGHT_DIRECTED_BITMASK)
@@ -371,20 +361,13 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             let contactPoint = contact.contactPoint
             
-            print(" PAD HIT!")
-            
             let target = CGPoint(x: blackBumperNode.position.x - contactPoint.x,
                                  y: blackBumperNode.position.y - contactPoint.y)
             
             directBallTo(ball: ball, p: target)
             accelerateBall(ball: ball, proportion: (STARTING_BALL_SPEED * currentBallSpeedFactor / getBallSpeed(v: ball.velocity)))
-            
-            var pling : SKAudioNode
-            pling = SKAudioNode(fileNamed: "Teco.mp3")
-            pling.autoplayLooped = false
-            pling.run(SKAction.changeVolume(to: Float(1.0), duration: 0))
-            self.addChild(pling)
-            pling.run(SKAction.play())
+        
+            playSoundEffect(mainNode: self, fileName: "Teco.mp3", volume: 0.5)
             
         } else if (contact.bodyA.contactTestBitMask == BALL_BITMASK) &&
             (contact.bodyB.contactTestBitMask == BUMPER_BITMASK)
@@ -403,16 +386,11 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             accelerateBall(ball: ball, proportion: (STARTING_BALL_SPEED * currentBallSpeedFactor / getBallSpeed(v: ball.velocity)))
             
-            var pling : SKAudioNode
             if (bumper.node == whiteBumperNode) {
-                pling = SKAudioNode(fileNamed: "TimpanoAgudo.mp3")
+                playSoundEffect(mainNode: self, fileName: "TimpanoAgudo.mp3", volume: 1)
             } else {
-                pling = SKAudioNode(fileNamed: "TimpanoGrave.mp3")
+                playSoundEffect(mainNode: self, fileName: "TimpanoGrave.mp3", volume: 1)
             }
-            pling.autoplayLooped = false
-            pling.run(SKAction.changeVolume(to: Float(1.0), duration: 0))
-            self.addChild(pling)
-            pling.run(SKAction.play())
 
             
         } else if (contact.bodyA.contactTestBitMask == BALL_BITMASK) &&

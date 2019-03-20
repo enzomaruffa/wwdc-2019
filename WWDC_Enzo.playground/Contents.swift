@@ -21,6 +21,7 @@ if let scene = GameScene(fileNamed: "GameScene") {
     //sceneView.showsFields = true
     
     // Load the SKScene from 'GameScene.sks'
+    
     let AssortedMusics = NSURL(fileURLWithPath: Bundle.main.path(forResource: "BackgroundSong", ofType: "mp3")!)
     AudioPlayer = try! AVAudioPlayer(contentsOf: AssortedMusics as URL)
     AudioPlayer.prepareToPlay()

@@ -36,10 +36,10 @@ public func createBlackSidePath(center: CGPoint, radius: CGFloat) -> CGPath {
     path.addArc(center: center, radius: radius, startAngle: degreeToRad(degree: 0), endAngle: degreeToRad(degree: 180), clockwise: false)
     
     let rightMiddlePoint = CGPoint(x: p0.x * -0.5, y: p0.y)
-    path.addArc(center: rightMiddlePoint, radius: radius/2, startAngle: degreeToRad(degree: 180), endAngle: degreeToRad(degree: 0), clockwise: false)
+    path.addArc(center: rightMiddlePoint, radius: radius/2, startAngle: degreeToRad(degree: 180), endAngle: degreeToRad(degree: 0), clockwise: true)
     
     let leftMiddlePoint = CGPoint(x: p0.x / 2, y: p0.y)
-    path.addArc(center: leftMiddlePoint, radius: radius/2, startAngle: degreeToRad(degree: 180), endAngle: degreeToRad(degree: 0), clockwise: true)
+    path.addArc(center: leftMiddlePoint, radius: radius/2, startAngle: degreeToRad(degree: 180), endAngle: degreeToRad(degree: 0), clockwise: false)
     
     path.closeSubpath()
     
@@ -135,4 +135,18 @@ public func startGame(ballNode: SKShapeNode) {
 
 public func getBallSpeed(v:CGVector) -> CGFloat {
     return abs(v.dx) + abs(v.dy)
+}
+
+public func playSoundEffect(mainNode:SKNode, fileName: String, volume: Float) {
+    var pling : SKAudioNode
+    pling = SKAudioNode(fileNamed: fileName)
+    pling.autoplayLooped = false
+    pling.run(SKAction.changeVolume(to: volume, duration: 0))
+    mainNode.addChild(pling)
+    pling.run(SKAction.play())
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+        pling.removeFromParent()
+    })
+    
 }
