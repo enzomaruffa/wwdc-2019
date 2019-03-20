@@ -9,11 +9,13 @@ var rightButtonNode : SKShapeNode!
 var whiteBumperNode : SKShapeNode!
 var blackBumperNode : SKShapeNode!
 
+var lastTouch : UITouch!
+
 var movingLeft = false
 var movingRight = false
 
-var minPadsZRotation = CGFloat(degreeToRad(degree: PAD_SIZE * -1 * 0.97));
-var maxPadsZRotation = CGFloat(degreeToRad(degree: PAD_SIZE * 0.97));
+var minPadsZRotation = CGFloat(degreeToRad(degree: ((180 - BORDER_SIZE - PAD_SIZE)/2) * -1 * 0.99));
+var maxPadsZRotation = CGFloat(degreeToRad(degree: ((180 - BORDER_SIZE - PAD_SIZE)/2) * 0.99));
 
 public var MAIN_NODE_ROTATION = MAIN_NODE_ROTATION_ORIGINAL
 
@@ -99,7 +101,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let whitePadMiddleEndAngle = degreeToRad(degree: 90+(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
         let whitePadBorder2EndAngle = degreeToRad(degree: 90+PAD_SIZE/2)
         
-        let whitePadBorder1Path = createSemicirclePath(width: ARC_WIDTH, startAngle: whitePadBorder1StartAngle, endAngle: whitePadBorder1EndAngle - degreeToRad(degree: 1), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        let whitePadBorder1Path = createSemicirclePath(width: ARC_WIDTH, startAngle: whitePadBorder1StartAngle, endAngle: whitePadBorder1EndAngle - degreeToRad(degree: 0.5), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
         
         let whitePadBorder1Node = SKShapeNode(path: whitePadBorder1Path)
         whitePadBorder1Node.strokeColor = PAD_OUTSIDE_COLOR
@@ -121,7 +123,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         whitePadMiddleNode.physicsBody = whitePadMiddlePhysicsBody
         padsContainerNode.addChild(whitePadMiddleNode)
         
-        let whitePadBorder2Path = createSemicirclePath(width: ARC_WIDTH, startAngle: whitePadMiddleEndAngle + degreeToRad(degree: 1), endAngle: whitePadBorder2EndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        let whitePadBorder2Path = createSemicirclePath(width: ARC_WIDTH, startAngle: whitePadMiddleEndAngle + degreeToRad(degree: 0.5), endAngle: whitePadBorder2EndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
         
         let whitePadBorder2Node = SKShapeNode(path: whitePadBorder2Path)
         whitePadBorder2Node.strokeColor = PAD_OUTSIDE_COLOR
@@ -198,7 +200,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         rightButtonNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*1.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0)), radius: 50)
         rightButtonNode.fillColor = SKColor.white
-        rightButtonNode.strokeColor = SKColor.black
+        rightButtonNode.strokeColor = SKColor.white
         self.addChild(rightButtonNode)
         
         startGame(ballNode: ballNode as SKShapeNode!)
@@ -225,29 +227,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for touch in touches {
-            
-            let location = touch.location(in: self)
-            
-            if padsContainerNode.contains(location) {
-                //if isBallInside() {
-                ballNode.position = CGPoint(x: 0, y: 0)
-                //}
-                MAIN_NODE_ROTATION = MAIN_NODE_ROTATION_ORIGINAL
-                generateRandomBallMovement(ballNode: ballNode)
-            }
-            
-            if leftButtonNode.contains(location) {
-                movingLeft = true
-                movingRight = false
-            } else if rightButtonNode.contains(location) {
-                movingRight = true
-                movingLeft = false
-            }
-            
+        let touch = Array(touches)[touches.count-1]
+        let location = touch.location(in: self)
+        
+        if padsContainerNode.contains(location) {
+            //if isBallInside() {
+            ballNode.position = CGPoint(x: 0, y: 0)
+            //}
+            MAIN_NODE_ROTATION = MAIN_NODE_ROTATION_ORIGINAL
+            generateRandomBallMovement(ballNode: ballNode)
+        }
+        
+        if leftButtonNode.contains(location) {
+            movingLeft = false
+            movingRight = true
+        } else if rightButtonNode.contains(location) {
+            movingRight = false
+            movingLeft = true
         }
         //print(movingLeft)
         //print(movingRight)
+        
+        lastTouch = touch
         
         for t in touches { touchDown(atPoint: t.location(in: self)) }
     }
@@ -258,12 +259,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let touch = touches.first
         
-        let touch = touches.first!
-        let location = touch.location(in: self)
-        
-        movingRight = false
-        movingLeft = false
+        if touch?.location(in: self) == lastTouch.location(in: self) {
+            movingRight = false
+            movingLeft = false
+        }
         
         for t in touches { touchUp(atPoint: t.location(in: self)) }
     }
@@ -373,6 +374,7 @@ if let scene = GameScene(fileNamed: "GameScene") {
     sceneView.presentScene(scene)
     //sceneView.showsPhysics = true
     sceneView.showsFPS = true
+    sceneView.isMultipleTouchEnabled = true
     //sceneView.showsFields = true
 }
 

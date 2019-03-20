@@ -8,6 +8,10 @@ public func degreeToRad(degree: CGFloat) -> CGFloat {
     return 0.01745329252 * degree
 }
 
+public func radToDegree(rad: CGFloat) -> CGFloat {
+    return rad / 0.01745329252
+}
+
 //Padrão: ponto mais próximo do centro horiozontal e topo primeiro.
 public func createSemicirclePath(width: CGFloat, startAngle: CGFloat, endAngle: CGFloat, center: CGPoint, radius: CGFloat, clockwise: Bool) -> CGMutablePath { //CGPath {
     
@@ -111,24 +115,12 @@ public func generateRandomBallMovement(ballNode : SKShapeNode) {
 }
 
 public func directBallTo(ball : SKPhysicsBody, p : CGPoint) {
-    print("Current velocity")
-    print(ball.velocity)
     let speed = getBallSpeed(v: ball.velocity)
-    print("Current speed")
-    print(speed)
     let nv = normalizeVector(v: CGVector(dx: p.x, dy: p.y))
-    print("nv")
-    print(nv)
     let speedFactor = speed/(abs(nv.dx)+abs(nv.dy))
-    print("Speed factor")
-    print(speedFactor)
     let v = CGVector(dx: nv.dx*speedFactor, dy: nv.dy*speedFactor)
-    print("v")
-    print(v)
     ball.velocity = CGVector(dx:0, dy:0)
     ball.velocity = v
-    print("New velocity")
-    print(getBallSpeed(v: ball.velocity))
 }
 
 public func normalizeVector(v : CGVector) -> CGVector {

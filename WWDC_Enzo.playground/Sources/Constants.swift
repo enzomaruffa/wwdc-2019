@@ -1,10 +1,10 @@
 import Foundation
 import SpriteKit
 
-public let PAD_STEP = CGFloat(3.01)
-public let BUMPER_SPEED_FACTOR = CGFloat(1.0333)
+public let PAD_STEP = CGFloat(2.75)
+public let BUMPER_SPEED_FACTOR = CGFloat(1.0533)
 public let WAVE_DURATION : TimeInterval = 0.8
-public let MAIN_NODE_ROTATION_INCREMENT = CGFloat(0.15/60)
+public let MAIN_NODE_ROTATION_INCREMENT = CGFloat(0.02/60)
 public var MAIN_NODE_ROTATION_ORIGINAL = CGFloat(20/60)
 
 public let BALL_BITMASK : UInt32 = 0x00000011
@@ -40,10 +40,10 @@ public let PAD_INSIDE_COLOR = WEAK_PURPLE
 public let PAD_OUTSIDE_COLOR = STRONG_PURPLE
 public let BORDER_COLOR = SKColor.black
 
-public let PAD_SIZE = CGFloat(20)
+public let PAD_SIZE = CGFloat(22)
 public let PAD_CENTRAL_PROPORTION = CGFloat(0.6)
-public let BORDER_SIZE = CGFloat(120)
+public let BORDER_SIZE = CGFloat(100)
 
-public let STARTING_BALL_SPEED = CGFloat(550)
+public let STARTING_BALL_SPEED = CGFloat(380)
 
 public let BALL_PROPORTION = CGFloat(0.05)
