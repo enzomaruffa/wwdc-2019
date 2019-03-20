@@ -27,7 +27,7 @@ public let BUMPER_RADIUS = CIRCLE_RADIUS*CGFloat(0.18)
 public let STRONG_PURPLE = UIColor(red:0.6118, green:0.2118, blue:0.8588, alpha:1.00000)
 public let WEAK_PURPLE = UIColor(red:0.6863, green:0.3686, blue:0.8863, alpha:1.00000)
 
-public let ICE_WHITE = SKColor.init(red: 0.80, green: 0.80, blue: 0.80, alpha: 1.0)
+public let ICE_WHITE = SKColor.init(red: 0.87, green: 0.87, blue: 0.87, alpha: 1.0)
 public let GREY = SKColor.init(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.0)
 
 /*public let WHITE_SIDE_COLOR = ICE_WHITE
