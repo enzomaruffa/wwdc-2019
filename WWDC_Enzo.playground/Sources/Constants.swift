@@ -2,9 +2,11 @@ import Foundation
 import SpriteKit
 
 public let PAD_STEP = CGFloat(2.75)
-public let BUMPER_SPEED_FACTOR = CGFloat(1.0533)
-public let WAVE_DURATION : TimeInterval = 0.8
-public let MAIN_NODE_ROTATION_INCREMENT = CGFloat(0.02/60)
+public let BUMPER_SPEED_FACTOR = CGFloat(1.0633)
+
+public let WAVE_DURATION : TimeInterval = 0.9
+
+public let MAIN_NODE_ROTATION_INCREMENT = CGFloat(0.03/60)
 public var MAIN_NODE_ROTATION_ORIGINAL = CGFloat(20/60)
 
 public let BALL_BITMASK : UInt32 = 0x00000011
@@ -20,7 +22,7 @@ public let SCREEN_WIDTH = CGFloat(800)
 public let SCREEN_HEIGHT = CGFloat(600)
 public let ARC_WIDTH = CGFloat(5)
 
-public let BUMPER_RADIUS = CIRCLE_RADIUS*CGFloat(0.15)
+public let BUMPER_RADIUS = CIRCLE_RADIUS*CGFloat(0.18)
 
 public let STRONG_PURPLE = UIColor(red:0.6118, green:0.2118, blue:0.8588, alpha:1.00000)
 public let WEAK_PURPLE = UIColor(red:0.6863, green:0.3686, blue:0.8863, alpha:1.00000)

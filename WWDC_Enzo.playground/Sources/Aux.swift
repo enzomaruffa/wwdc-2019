@@ -69,13 +69,6 @@ public func accelerateBall(ball: SKPhysicsBody, proportion: CGFloat) {
 }
 
 public func createBumperWave(bumper: SKShapeNode) {
-    //let waveCenter = CGPoint(x:0,y:0)
-    //let wavePosition = getCirclePointByAngle(radius: BUMPER_RADIUS, center: waveCenter, angle: 0)
-    
-    /*let path = CGMutablePath()
-     path.move(to: wavePosition)
-     path.addArc(center: waveCenter, radius: BUMPER_RADIUS, startAngle: 0, endAngle: degreeToRad(degree: 360), clockwise: true)
-     path.closeSubpath()*/
     let waveNode = SKShapeNode(circleOfRadius: BUMPER_RADIUS)
     waveNode.fillColor = bumper.fillColor
     waveNode.strokeColor = bumper.fillColor
@@ -93,7 +86,6 @@ public func createBumperWave(bumper: SKShapeNode) {
     DispatchQueue.main.asyncAfter(deadline: .now() + WAVE_DURATION, execute: {
         waveNode.removeFromParent()
     })
-    
 }
 
 public func setDefaultPhysicalProperties(body: SKPhysicsBody, bitmask: UInt32) {
@@ -111,20 +103,28 @@ public func generateRandomBallMovement(ballNode : SKShapeNode) {
     let randomDirection = Double.random(in: 0...360)
     let p = getCirclePointByAngle(radius: CIRCLE_RADIUS, center: CIRCLE_CENTER, angle: degreeToRad(degree: CGFloat(randomDirection)))
     
+    print("Generated point: ", p)
+    
     directBallTo(ball: ballNode.physicsBody!, p: p)
 }
 
 public func directBallTo(ball : SKPhysicsBody, p : CGPoint) {
     let speed = getBallSpeed(v: ball.velocity)
+    print("speed: ", speed)
     let nv = normalizeVector(v: CGVector(dx: p.x, dy: p.y))
+    print("nv: ", nv)
     let speedFactor = speed/(abs(nv.dx)+abs(nv.dy))
+    print("speedFactor: ", speedFactor)
     let v = CGVector(dx: nv.dx*speedFactor, dy: nv.dy*speedFactor)
+    print("v: ", v)
     ball.velocity = CGVector(dx:0, dy:0)
     ball.velocity = v
 }
 
 public func normalizeVector(v : CGVector) -> CGVector {
-    let vectorSize = sqrt(v.dx * v.dx + v.dy + v.dy)
+    print("normalizeVector v: ", v)
+    let vectorSize = sqrt(v.dx * v.dx + v.dy * v.dy)
+    print("vectorSize", vectorSize)
     return CGVector(dx: v.dx/vectorSize, dy: v.dy/vectorSize)
 }
 
