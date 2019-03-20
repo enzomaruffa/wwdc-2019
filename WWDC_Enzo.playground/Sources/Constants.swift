@@ -6,9 +6,10 @@ public let CIRCLE_CENTER = CGPoint(x: 0, y: 0)
 public let SCREEN_WIDTH = CGFloat(800)
 public let SCREEN_HEIGHT = CGFloat(600)
 public let ARC_WIDTH = CGFloat(5)
+public let PAD_WIDTH = ARC_WIDTH + CGFloat(8)
 
 public let PAD_STEP = CGFloat(2.75)
-public let BUMPER_SPEED_FACTOR = CGFloat(1.0633)
+public let BUMPER_SPEED_FACTOR = CGFloat(1.0233)
 
 public let WAVE_DURATION : TimeInterval = 0.9
 

@@ -103,28 +103,29 @@ public func generateRandomBallMovement(ballNode : SKShapeNode) {
     let randomDirection = Double.random(in: 0...360)
     let p = getCirclePointByAngle(radius: CIRCLE_RADIUS, center: CIRCLE_CENTER, angle: degreeToRad(degree: CGFloat(randomDirection)))
     
-    print("Generated point: ", p)
+    //print("Generated point: ", p)
     
     directBallTo(ball: ballNode.physicsBody!, p: p)
 }
 
 public func directBallTo(ball : SKPhysicsBody, p : CGPoint) {
-    let speed = getBallSpeed(v: ball.velocity)
-    print("speed: ", speed)
+    var speed = getBallSpeed(v: ball.velocity)
+    //print("speed: ", speed)
+    speed = max(1, speed)
     let nv = normalizeVector(v: CGVector(dx: p.x, dy: p.y))
-    print("nv: ", nv)
+    //print("nv: ", nv)
     let speedFactor = speed/(abs(nv.dx)+abs(nv.dy))
-    print("speedFactor: ", speedFactor)
+    //print("speedFactor: ", speedFactor)
     let v = CGVector(dx: nv.dx*speedFactor, dy: nv.dy*speedFactor)
-    print("v: ", v)
+    //print("v: ", v)
     ball.velocity = CGVector(dx:0, dy:0)
     ball.velocity = v
 }
 
 public func normalizeVector(v : CGVector) -> CGVector {
-    print("normalizeVector v: ", v)
+    //print("normalizeVector v: ", v)
     let vectorSize = sqrt(v.dx * v.dx + v.dy * v.dy)
-    print("vectorSize", vectorSize)
+    //print("vectorSize", vectorSize)
     return CGVector(dx: v.dx/vectorSize, dy: v.dy/vectorSize)
 }
 
