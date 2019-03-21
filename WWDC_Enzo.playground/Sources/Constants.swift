@@ -23,7 +23,7 @@ public let PAD_BITMASK : UInt32 = 0x00000100
 public let PAD_LEFT_DIRECTED_BITMASK : UInt32 = 0x00000101
 public let PAD_RIGHT_DIRECTED_BITMASK : UInt32 = 0x00000111
 
-public let BUMPER_RADIUS = CIRCLE_RADIUS*CGFloat(0.13)
+public let BUMPER_RADIUS = CIRCLE_RADIUS*CGFloat(0.12)
 
 public let STRONG_PURPLE = UIColor(red:0.6118, green:0.2118, blue:0.8588, alpha:1.00000)
 public let WEAK_PURPLE = UIColor(red:0.6863, green:0.3686, blue:0.8863, alpha:1.00000)

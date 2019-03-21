@@ -5,8 +5,15 @@ import SpriteKit
 var mainNode : SKShapeNode!
 var ballNode : SKShapeNode!
 var padsContainerNode : SKShapeNode!
-var leftButtonNode : SKShapeNode!
-var rightButtonNode : SKShapeNode!
+
+var leftButtonNode : SKSpriteNode!
+var rightButtonNode : SKSpriteNode!
+
+var leftButtonReleasedTex : SKTexture!
+var rightButtonReleasedTex : SKTexture!
+var leftButtonPressedTex : SKTexture!
+var rightButtonPressedTex : SKTexture!
+
 var whiteBumperNode : SKShapeNode!
 var blackBumperNode : SKShapeNode!
 var leftArcNode : SKShapeNode!
@@ -31,6 +38,13 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public override func didMove(to view: SKView) {
         // Get label node from scene and store it for use later
+        
+        leftButtonReleasedTex = SKTexture(imageNamed: "counterClockWiseReleased.png")
+        rightButtonReleasedTex = SKTexture(imageNamed: "clockWiseReleased.png")
+        leftButtonPressedTex = SKTexture(imageNamed: "counterClockWisePressed.png")
+        rightButtonPressedTex = SKTexture(imageNamed: "clockWisePressed.png")
+        
+        print(leftButtonPressedTex)
         
         physicsWorld.contactDelegate = self
         
@@ -87,7 +101,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         mainNode.addChild(whiteBumperNode)
         
-        blackBumperNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: 180), radius: BUMPER_RADIUS)
+        blackBumperNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: 135), radius: BUMPER_RADIUS)
         blackBumperNode.fillColor = BLACK_SIDE_COLOR
         blackBumperNode.strokeColor = BLACK_SIDE_COLOR
         
@@ -203,18 +217,18 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //
         
+        leftButtonNode = SKSpriteNode(texture: leftButtonReleasedTex)
         let leftButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 180))
-        leftButtonNode = createBall(p: CGPoint(x: leftButtonPoint.x, y: leftButtonPoint.y - SCREEN_HEIGHT/3.3), radius: 70)
-        leftButtonNode.fillColor = SKColor.black
-        leftButtonNode.strokeColor = SKColor.black
+        leftButtonNode.position = CGPoint(x: leftButtonPoint.x, y: leftButtonPoint.y - SCREEN_HEIGHT/3.3)
+        leftButtonNode.setScale(0.3)
         self.addChild(leftButtonNode)
         
-        let rightButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0))
-        rightButtonNode = createBall(p: CGPoint(x: rightButtonPoint.x, y: rightButtonPoint.y - SCREEN_HEIGHT/3.3), radius: 70)
-        rightButtonNode.fillColor = SKColor.white
-        rightButtonNode.strokeColor = SKColor.white
+        rightButtonNode = SKSpriteNode(texture: rightButtonReleasedTex)
+        let rightButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0.3))
+        rightButtonNode.setScale(0.3)
+        rightButtonNode.position = CGPoint(x: rightButtonPoint.x, y: rightButtonPoint.y - SCREEN_HEIGHT/3.3)
         self.addChild(rightButtonNode)
-        
+
         startGame(ballNode: ballNode as SKShapeNode!)
     }
     
@@ -243,9 +257,11 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let location = touch.location(in: self)
         
         if leftButtonNode.contains(location) {
+            leftButtonNode.texture = leftButtonPressedTex
             movingLeft = false
             movingRight = true
         } else if rightButtonNode.contains(location) {
+            rightButtonNode.texture = rightButtonPressedTex
             movingRight = false
             movingLeft = true
         }
@@ -263,9 +279,16 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first
+        let touch = touches.first!
+        let location = touch.location(in: self)
         
-        if touch?.location(in: self) == lastTouch.location(in: self) {
+        if leftButtonNode.contains(location) {
+            leftButtonNode.texture = leftButtonReleasedTex
+        } else if rightButtonNode.contains(location) {
+            rightButtonNode.texture = rightButtonReleasedTex
+        }
+        
+        if touch.location(in: self) == lastTouch.location(in: self) {
             movingRight = false
             movingLeft = false
         }
