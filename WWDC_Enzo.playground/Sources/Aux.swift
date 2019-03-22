@@ -46,6 +46,13 @@ public func createBlackSidePath(center: CGPoint, radius: CGFloat) -> CGPath {
     return path
 }
 
+public func createButton(texture: SKTexture, position: CGPoint, scale: CGFloat) -> SKSpriteNode {
+    let buttonNode = SKSpriteNode(texture: texture)
+    buttonNode.setScale(scale)
+    buttonNode.position = position
+    return buttonNode
+}
+
 public func getCirclePointByAngle(radius: CGFloat, center: CGPoint, angle: CGFloat) -> CGPoint {
     return CGPoint(x: center.x + radius * cos(angle),
                    y: center.y + radius * sin(angle))
@@ -56,9 +63,33 @@ public func getAngleByCirclePoint(p: CGPoint) -> CGFloat  {
     return angle < 0 ? CGFloat(Double.pi) + abs(angle) : angle
 }
 
-public func createBall(p: CGPoint, radius: CGFloat) -> SKShapeNode {
+public func createBumper(p: CGPoint, radius: CGFloat, fillColor: SKColor, strokeColor: SKColor) -> SKShapeNode {
+    let bumperNode = SKShapeNode(circleOfRadius: radius)
+    bumperNode.position = p
+    
+    bumperNode.fillColor = fillColor
+    bumperNode.strokeColor = strokeColor
+    
+    let bumperNodePhysicsBody = SKPhysicsBody(circleOfRadius: radius)
+    setDefaultPhysicalProperties(body: bumperNodePhysicsBody, bitmask: BUMPER_BITMASK)
+    bumperNode.physicsBody = bumperNodePhysicsBody
+    
+    return bumperNode
+}
+
+public func createBall(p: CGPoint, radius: CGFloat, fillColor: SKColor, strokeColor: SKColor) -> SKShapeNode {
     let ballNode = SKShapeNode(circleOfRadius: radius)
     ballNode.position = p
+    
+    ballNode.fillColor = fillColor
+    ballNode.strokeColor = strokeColor
+    
+    let ballNodePhysicsBody = SKPhysicsBody(circleOfRadius: radius)
+    setDefaultPhysicalProperties(body: ballNodePhysicsBody, bitmask: BALL_BITMASK)
+    ballNodePhysicsBody.restitution = 0.3
+    ballNodePhysicsBody.mass = 1.0
+    ballNode.physicsBody = ballNodePhysicsBody
+    
     return ballNode
 }
 

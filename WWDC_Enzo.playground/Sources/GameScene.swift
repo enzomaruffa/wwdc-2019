@@ -22,6 +22,9 @@ var rightArcNode : SKShapeNode!
 var originalRightBorderPosition : CGPoint!
 var originalLeftBorderPosition : CGPoint!
 
+var spinCounter: Int!
+var spinCounterNode : SKLabelNode!
+
 var lastTouch : UITouch!
 
 var movingLeft = false
@@ -44,14 +47,12 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         leftButtonPressedTex = SKTexture(imageNamed: "counterClockWisePressed.png")
         rightButtonPressedTex = SKTexture(imageNamed: "clockWisePressed.png")
         
-        print(leftButtonPressedTex)
-        
         physicsWorld.contactDelegate = self
         
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.speed = 1
         
-        mainNode = createBall(p: CIRCLE_CENTER, radius: CIRCLE_RADIUS + 25)
+        mainNode = SKShapeNode(circleOfRadius: CIRCLE_RADIUS+25)
         mainNode.position = CGPoint(x: 0, y: 0)
         mainNode.strokeColor = SKColor.clear
         self.addChild(mainNode)
@@ -75,7 +76,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         rightArcNode.physicsBody = rightPathPhysicsBody
         mainNode.addChild(rightArcNode)
         
-        
         let leftPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 180+BORDER_SIZE/2), endAngle: degreeToRad(degree: 180-BORDER_SIZE/2), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
         
         leftArcNode = SKShapeNode(path: leftPath)
@@ -91,23 +91,11 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //
         
-        whiteBumperNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0)), radius: BUMPER_RADIUS)
-        whiteBumperNode.fillColor = WHITE_SIDE_COLOR
-        whiteBumperNode.strokeColor = WHITE_SIDE_COLOR
-        
-        let whiteBumperNodePhysicsBody = SKPhysicsBody(circleOfRadius: BUMPER_RADIUS)
-        setDefaultPhysicalProperties(body: whiteBumperNodePhysicsBody, bitmask: BUMPER_BITMASK)
-        whiteBumperNode.physicsBody = whiteBumperNodePhysicsBody
+        whiteBumperNode = createBumper(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0)), radius: BUMPER_RADIUS, fillColor: WHITE_SIDE_COLOR, strokeColor: WHITE_SIDE_COLOR)
         
         mainNode.addChild(whiteBumperNode)
         
-        blackBumperNode = createBall(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: 135), radius: BUMPER_RADIUS)
-        blackBumperNode.fillColor = BLACK_SIDE_COLOR
-        blackBumperNode.strokeColor = BLACK_SIDE_COLOR
-        
-        let blackBumperNodePhysicsBody = SKPhysicsBody(circleOfRadius: BUMPER_RADIUS)
-        setDefaultPhysicalProperties(body: blackBumperNodePhysicsBody, bitmask: BUMPER_BITMASK)
-        blackBumperNode.physicsBody = blackBumperNodePhysicsBody
+        blackBumperNode = createBumper(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: 135), radius: BUMPER_RADIUS, fillColor: BLACK_SIDE_COLOR, strokeColor: BLACK_SIDE_COLOR)
         
         mainNode.addChild(blackBumperNode)
         
@@ -204,30 +192,36 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //
         
-        ballNode = createBall(p: CIRCLE_CENTER, radius: CIRCLE_RADIUS * BALL_PROPORTION)
-        ballNode.fillColor = WHITE_SIDE_COLOR
-        ballNode.strokeColor = BLACK_SIDE_COLOR
+        ballNode = createBall(p: CIRCLE_CENTER, radius: CIRCLE_RADIUS * BALL_PROPORTION, fillColor: WHITE_SIDE_COLOR, strokeColor: BLACK_SIDE_COLOR)
         self.addChild(ballNode)
-        
-        let ballNodePhysicsBody = SKPhysicsBody(circleOfRadius: CIRCLE_RADIUS*0.05)
-        setDefaultPhysicalProperties(body: ballNodePhysicsBody, bitmask: 0x00000011)
-        ballNodePhysicsBody.restitution = 0.3
-        ballNodePhysicsBody.mass = 1.0
-        ballNode.physicsBody = ballNodePhysicsBody
-        
         //
         
-        leftButtonNode = SKSpriteNode(texture: leftButtonReleasedTex)
-        let leftButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 180))
-        leftButtonNode.position = CGPoint(x: leftButtonPoint.x, y: leftButtonPoint.y - SCREEN_HEIGHT/3.3)
-        leftButtonNode.setScale(0.3)
-        self.addChild(leftButtonNode)
         
-        rightButtonNode = SKSpriteNode(texture: rightButtonReleasedTex)
-        let rightButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0.3))
-        rightButtonNode.setScale(0.3)
-        rightButtonNode.position = CGPoint(x: rightButtonPoint.x, y: rightButtonPoint.y - SCREEN_HEIGHT/3.3)
+        let leftButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 180))
+        leftButtonNode = createButton(texture : leftButtonReleasedTex, position: CGPoint(x: leftButtonPoint.x, y: leftButtonPoint.y - SCREEN_HEIGHT/3.3), scale: 0.35)
+        self.addChild(leftButtonNode)
+    
+        let rightButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0))
+         rightButtonNode = createButton(texture : rightButtonReleasedTex, position: CGPoint(x: rightButtonPoint.x, y: rightButtonPoint.y - SCREEN_HEIGHT/3.3), scale: 0.35)
         self.addChild(rightButtonNode)
+        
+        spinCounter = -1
+        
+        spinCounterNode = SKLabelNode(text: String(spinCounter))
+        spinCounterNode.position = CGPoint(x: SCREEN_WIDTH/2*(-1), y:SCREEN_HEIGHT/2.5)
+        //spinCounterNode.position = CIRCLE_CENTER
+        spinCounterNode.fontSize = CGFloat(80)
+        spinCounterNode.fontColor = SKColor.black
+        
+        self.addChild(spinCounterNode)
+        
+        let spinsNode = SKLabelNode(text: "spins")
+        spinsNode.position = CGPoint(x: SCREEN_WIDTH/2*(-1), y:SCREEN_HEIGHT/2.5 - 40)
+        //spinsNode.position = CIRCLE_CENTER
+        spinsNode.fontSize = CGFloat(40)
+        spinsNode.fontColor = SKColor.black
+        
+        self.addChild(spinsNode)
 
         startGame(ballNode: ballNode as SKShapeNode!)
     }
@@ -305,6 +299,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         currentZRotation -= degreeToRad(degree: MAIN_NODE_ROTATION)
         if (currentZRotation <= 0) {
             currentZRotation = degreeToRad(degree: 360);
+            spinCounter += 1
+            spinCounterNode.text = String(spinCounter)
         }
         mainNode.zRotation = currentZRotation
         
