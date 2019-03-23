@@ -3,7 +3,7 @@ import PlaygroundSupport
 import SpriteKit
 
 var mainNode : SKShapeNode!
-var padsContainerNode : SKShapeNode!
+var padContainerNode : SKShapeNode!
 
 var leftButtonNode : SKSpriteNode!
 var rightButtonNode : SKSpriteNode!
@@ -42,30 +42,33 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         //
         arcNode = SKShapeNode(circleOfRadius: 0)
         mainNode.addChild(arcNode)
+
+
+        //////////// pad container node
         
         let origin = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.2, center: CIRCLE_CENTER, angle: degreeToRad(degree: 270 - PAD_SIZE/2))
         let end = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.2, center: CIRCLE_CENTER, angle: degreeToRad(degree: 90 - PAD_SIZE/2))
         
         let size = CGSize(width: abs(origin.x - end.x), height: abs(origin.y - end.y))
         
-        padsContainerNode = SKShapeNode(rect: CGRect(origin: origin, size: size))
-        padsContainerNode.strokeColor = SKColor.clear
-        mainNode.addChild(padsContainerNode)
+        padContainerNode = SKShapeNode(rect: CGRect(origin: origin, size: size))
+        padContainerNode.strokeColor = SKColor.clear
+        mainNode.addChild(padContainerNode)
         
-        //////////// white pad
+        //////////// pad
         
-        let whitePadBorder1StartAngle = degreeToRad(degree: 90-PAD_SIZE/2)
-        let whitePadBorder1EndAngle = degreeToRad(degree: 90-(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
-        let whitePadMiddleEndAngle = degreeToRad(degree: 90+(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
-        let whitePadBorder2EndAngle = degreeToRad(degree: 90+PAD_SIZE/2)
+        let padStartAngle = degreeToRad(degree: 90-(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
+        let padEndAngle = degreeToRad(degree: 90+(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
 
-        let whitePadMiddlePath = createSemicirclePath(width: PAD_WIDTH, startAngle: whitePadBorder1EndAngle, endAngle: whitePadMiddleEndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        let padMiddlePath = createSemicirclePath(width: PAD_WIDTH, startAngle: padStartAngle, endAngle: padEndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
         
-        let whitePadMiddleNode = SKShapeNode(path: whitePadMiddlePath)
-        whitePadMiddleNode.strokeColor = PAD_INSIDE_COLOR
-        whitePadMiddleNode.fillColor = PAD_INSIDE_COLOR
-        padsContainerNode.addChild(whitePadMiddleNode)
-        //////////// black pad
+        let padMiddleNode = SKShapeNode(path: padMiddlePath)
+        padMiddleNode.strokeColor = PAD_INSIDE_COLOR
+        padMiddleNode.fillColor = PAD_INSIDE_COLOR
+        
+        padContainerNode.addChild(padMiddleNode)
+        
+        //////////// buttons
         
         let leftButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 180))
         leftButtonNode = createButton(texture : leftButtonReleasedTex, position: CGPoint(x: leftButtonPoint.x, y: leftButtonPoint.y - SCREEN_HEIGHT/3.3), scale: 0.35)
@@ -148,19 +151,19 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     public override func update(_ currentTime: TimeInterval) {
        
         if movingLeft {
-            padsContainerNode.zRotation -= degreeToRad(degree: PAD_STEP)
+            padContainerNode.zRotation -= degreeToRad(degree: PAD_STEP)
         } else if movingRight {
-            padsContainerNode.zRotation += degreeToRad(degree: PAD_STEP)
+            padContainerNode.zRotation += degreeToRad(degree: PAD_STEP)
         }
         
         if !hasCompletedCircle {
             var path : CGMutablePath!
-            if padsContainerNode.zRotation > 0 {
-                print("Clockwise:", padsContainerNode.zRotation)
-                path = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 90), endAngle: degreeToRad(degree: 90) + padsContainerNode.zRotation, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+            if padContainerNode.zRotation > 0 {
+                print("Clockwise:", padContainerNode.zRotation)
+                path = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 90), endAngle: degreeToRad(degree: 90) + padContainerNode.zRotation, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
             } else {
-                print("counterClockwise:", padsContainerNode.zRotation)
-                path = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 90), endAngle: padsContainerNode.zRotation + degreeToRad(degree: 90), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
+                print("counterClockwise:", padContainerNode.zRotation)
+                path = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 90), endAngle: padContainerNode.zRotation + degreeToRad(degree: 90), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
             }
             
             arcNode.removeFromParent()
@@ -173,9 +176,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             mainNode.addChild(arcNode)
             
-            if padsContainerNode.zRotation <= degreeToRad(degree: 360) * -1 || padsContainerNode.zRotation >= degreeToRad(degree: 360)  {
+            if padContainerNode.zRotation <= degreeToRad(degree: 360) * -1 || padContainerNode.zRotation >= degreeToRad(degree: 360)  {
                 hasCompletedCircle = true
-                //TODO: adicionar pagina completa
+                PlaygroundPage.current.assessmentStatus = .pass(message: "Great! Let's move on :)")
             }
             
         }

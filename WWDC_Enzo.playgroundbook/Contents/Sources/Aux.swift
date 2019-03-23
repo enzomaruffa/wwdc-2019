@@ -15,7 +15,7 @@ public func radToDegree(rad: CGFloat) -> CGFloat {
 //Padrão: ponto mais próximo do centro horiozontal e topo primeiro.
 public func createSemicirclePath(width: CGFloat, startAngle: CGFloat, endAngle: CGFloat, center: CGPoint, radius: CGFloat, clockwise: Bool) -> CGMutablePath { //CGPath {
     
-    let p0 = getCirclePointByAngle(radius: CIRCLE_RADIUS, center: CIRCLE_CENTER, angle: startAngle)
+    let p0 = getCirclePointByAngle(radius: radius, center: center, angle: startAngle)
     
     let path = CGMutablePath()
     path.move(to: p0)

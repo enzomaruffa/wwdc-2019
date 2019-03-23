@@ -1,10 +1,11 @@
 import Foundation
-import PlaygroundSupport
 import SpriteKit
+import PlaygroundSupport
 
 var mainNode : SKShapeNode!
-var ballNode : SKShapeNode!
-var padsContainerNode : SKShapeNode!
+var blackSideNode: SKShapeNode!
+var leftPadContainerNode : SKShapeNode!
+var rightPadContainerNode : SKShapeNode!
 
 var leftButtonNode : SKSpriteNode!
 var rightButtonNode : SKSpriteNode!
@@ -16,214 +17,156 @@ var rightButtonPressedTex : SKTexture!
 
 var whiteBumperNode : SKShapeNode!
 var blackBumperNode : SKShapeNode!
+
 var leftArcNode : SKShapeNode!
 var rightArcNode : SKShapeNode!
-
-var originalRightBorderPosition : CGPoint!
-var originalLeftBorderPosition : CGPoint!
-
-var spinCounter: Int!
-var spinCounterNode : SKLabelNode!
 
 var lastTouch : UITouch!
 
 var movingLeft = false
 var movingRight = false
 
-var minPadsZRotation = CGFloat(degreeToRad(degree: ((180 - BORDER_SIZE - PAD_SIZE)/2) * -1 * 0.99));
-var maxPadsZRotation = CGFloat(degreeToRad(degree: ((180 - BORDER_SIZE - PAD_SIZE)/2) * 0.99));
+var hasCompletedBlackPart = false
 
-var currentBallSpeedFactor = CGFloat(1)
-
-public var MAIN_NODE_ROTATION = MAIN_NODE_ROTATION_ORIGINAL
+let instantFadeOut = SKAction.fadeOut(withDuration: 0.0)
 
 public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public override func didMove(to view: SKView) {
         // Get label node from scene and store it for use later
         
+        physicsWorld.gravity = CGVector(dx: 0, dy: 0)
+        
         leftButtonReleasedTex = SKTexture(imageNamed: "counterClockWiseReleased.png")
         rightButtonReleasedTex = SKTexture(imageNamed: "clockWiseReleased.png")
         leftButtonPressedTex = SKTexture(imageNamed: "counterClockWisePressed.png")
         rightButtonPressedTex = SKTexture(imageNamed: "clockWisePressed.png")
         
-        physicsWorld.contactDelegate = self
-        
-        physicsWorld.gravity = CGVector(dx: 0, dy: 0)
-        physicsWorld.speed = 1
-        
         mainNode = SKShapeNode(circleOfRadius: CIRCLE_RADIUS+25)
         mainNode.position = CGPoint(x: 0, y: 0)
         mainNode.strokeColor = SKColor.clear
+        
+        mainNode.zPosition = -2
         self.addChild(mainNode)
         
-        let blackSideNode = SKShapeNode(path: createBlackSidePath(center: CIRCLE_CENTER, radius: CIRCLE_RADIUS + 0))
+        // map stuff
+        
+        var fullArcNode = SKShapeNode(circleOfRadius: 0)
+        let fullArcPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 0), endAngle: degreeToRad(degree: 360), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
+        
+        fullArcNode = SKShapeNode(path: fullArcPath)
+        fullArcNode.strokeColor = BORDER_COLOR
+        fullArcNode.fillColor = BORDER_COLOR
+        
+        mainNode.addChild(fullArcNode)
+        
+        blackSideNode = SKShapeNode(path: createBlackSidePath(center: CIRCLE_CENTER, radius: CIRCLE_RADIUS + 0))
         blackSideNode.fillColor = BLACK_SIDE_COLOR
         blackSideNode.strokeColor = BLACK_SIDE_COLOR
+        blackSideNode.run(instantFadeOut)
         mainNode.addChild(blackSideNode)
         
-        //
-        let rightPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 0+BORDER_SIZE/2), endAngle: degreeToRad(degree: 0-BORDER_SIZE/2), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
+        /////////
         
-        rightArcNode = SKShapeNode(path: rightPath)
-        rightArcNode.strokeColor = BORDER_COLOR
-        rightArcNode.fillColor = BORDER_COLOR
+        leftArcNode = SKShapeNode(circleOfRadius: 0)
+        let leftArcPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 0), endAngle: degreeToRad(degree: 360), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
         
-        originalRightBorderPosition = rightArcNode.position
-        
-        let rightPathPhysicsBody = SKPhysicsBody(polygonFrom: rightPath)
-        setDefaultPhysicalProperties(body: rightPathPhysicsBody, bitmask: BORDER_BITMASK)
-        rightArcNode.physicsBody = rightPathPhysicsBody
-        mainNode.addChild(rightArcNode)
-        
-        let leftPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 180+BORDER_SIZE/2), endAngle: degreeToRad(degree: 180-BORDER_SIZE/2), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
-        
-        leftArcNode = SKShapeNode(path: leftPath)
+        leftArcNode = SKShapeNode(path: leftArcPath)
         leftArcNode.strokeColor = BORDER_COLOR
         leftArcNode.fillColor = BORDER_COLOR
         
-        originalLeftBorderPosition = leftArcNode.position
-        
-        let leftPathPhysicsBody = SKPhysicsBody(polygonFrom: leftPath)
-        setDefaultPhysicalProperties(body: leftPathPhysicsBody, bitmask: BORDER_BITMASK)
-        leftArcNode.physicsBody = leftPathPhysicsBody
         mainNode.addChild(leftArcNode)
         
+        rightArcNode = SKShapeNode(circleOfRadius: 0)
+        let rightArcPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 0), endAngle: degreeToRad(degree: 360), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
+        
+        rightArcNode = SKShapeNode(path: rightArcPath)
+        rightArcNode.strokeColor = BORDER_COLOR
+        rightArcNode.fillColor = BORDER_COLOR
+        
+        mainNode.addChild(rightArcNode)
+        
         //
         
-        whiteBumperNode = createBumper(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0)), radius: BUMPER_RADIUS, fillColor: WHITE_SIDE_COLOR, strokeColor: WHITE_SIDE_COLOR)
-        
+        let whiteBumperPosition = getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0))
+        print(whiteBumperPosition)
+        whiteBumperNode = createBumper(p: whiteBumperPosition, radius: BUMPER_RADIUS, fillColor: WHITE_SIDE_COLOR, strokeColor: BLACK_SIDE_COLOR)
+        whiteBumperNode.run(instantFadeOut)
         mainNode.addChild(whiteBumperNode)
         
-        blackBumperNode = createBumper(p: getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: 135), radius: BUMPER_RADIUS, fillColor: BLACK_SIDE_COLOR, strokeColor: BLACK_SIDE_COLOR)
+        let tempNodeWhite = SKShapeNode(circleOfRadius: 0)
+        tempNodeWhite.position = whiteBumperPosition
+        mainNode.addChild(tempNodeWhite)
         
+        let blackBumperPosition = getCirclePointByAngle(radius: CIRCLE_RADIUS*0.5, center: CIRCLE_CENTER, angle: degreeToRad(degree: 180))
+        print(blackBumperPosition)
+        blackBumperNode = createBumper(p: blackBumperPosition, radius: BUMPER_RADIUS, fillColor: BLACK_SIDE_COLOR, strokeColor: BLACK_SIDE_COLOR)
+        blackBumperNode.run(instantFadeOut)
         mainNode.addChild(blackBumperNode)
         
-        //
+        let tempNodeBlack = SKShapeNode(circleOfRadius: 0)
+        tempNodeBlack.position = blackBumperPosition
+        mainNode.addChild(tempNodeBlack)
         
-        let origin = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.2, center: CIRCLE_CENTER, angle: degreeToRad(degree: 270 - PAD_SIZE/2))
-        let end = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.2, center: CIRCLE_CENTER, angle: degreeToRad(degree: 90 - PAD_SIZE/2))
+        //////////// left pad container node
         
-        let size = CGSize(width: abs(origin.x - end.x), height: abs(origin.y - end.y))
+        let originLeft = getCirclePointByAngle(radius: CIRCLE_RADIUS/2, center: CGPoint(x: 0, y: -27), angle: degreeToRad(degree: 180 - PAD_SIZE/4))
+        let endLeft = getCirclePointByAngle(radius:CIRCLE_RADIUS/2, center: CGPoint(x: 0, y: -27), angle: degreeToRad(degree: 0 - PAD_SIZE/4))
         
-        padsContainerNode = SKShapeNode(rect: CGRect(origin: origin, size: size))
-        padsContainerNode.strokeColor = SKColor.clear
-        mainNode.addChild(padsContainerNode)
+        let sizeLeft = CGSize(width: abs(originLeft.x - endLeft.x), height: abs(originLeft.y - endLeft.y))
         
-        //////////// white pad
+        leftPadContainerNode = SKShapeNode(rect: CGRect(origin: originLeft, size: sizeLeft))
+        leftPadContainerNode.strokeColor = SKColor.clear
+        tempNodeWhite.addChild(leftPadContainerNode)
         
-        let whitePadBorder1StartAngle = degreeToRad(degree: 90-PAD_SIZE/2)
-        let whitePadBorder1EndAngle = degreeToRad(degree: 90-(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
-        let whitePadMiddleEndAngle = degreeToRad(degree: 90+(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
-        let whitePadBorder2EndAngle = degreeToRad(degree: 90+PAD_SIZE/2)
+        //////////// right pad container node
         
-        let whitePadBorder1Path = createSemicirclePath(width: PAD_WIDTH, startAngle: whitePadBorder1StartAngle, endAngle: whitePadBorder1EndAngle - degreeToRad(degree: 0.3), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        let originRight = getCirclePointByAngle(radius: CIRCLE_RADIUS/2, center: CGPoint(x: 0, y: -27), angle: degreeToRad(degree: 180 - PAD_SIZE/4))
+        let endRight = getCirclePointByAngle(radius:CIRCLE_RADIUS/2, center: CGPoint(x: 0, y: -27), angle: degreeToRad(degree: 0 - PAD_SIZE/4))
         
-        let whitePadBorder1Node = SKShapeNode(path: whitePadBorder1Path)
-        whitePadBorder1Node.strokeColor = PAD_OUTSIDE_COLOR
-        whitePadBorder1Node.fillColor = PAD_OUTSIDE_COLOR
+        let sizeRight = CGSize(width: abs(originRight.x - endRight.x), height: abs(originRight.y - endRight.y))
         
-        let whitePadBorder1PhysicsBody = SKPhysicsBody(polygonFrom: whitePadBorder1Path)
-        setDefaultPhysicalProperties(body: whitePadBorder1PhysicsBody, bitmask: PAD_LEFT_DIRECTED_BITMASK)
-        whitePadBorder1Node.physicsBody = whitePadBorder1PhysicsBody
-        padsContainerNode.addChild(whitePadBorder1Node)
+        rightPadContainerNode = SKShapeNode(rect: CGRect(origin: originRight, size: sizeRight))
+        rightPadContainerNode.strokeColor = SKColor.clear
+        tempNodeBlack.addChild(rightPadContainerNode)
         
-        let whitePadMiddlePath = createSemicirclePath(width: PAD_WIDTH, startAngle: whitePadBorder1EndAngle, endAngle: whitePadMiddleEndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        //////////// left pad
         
-        let whitePadMiddleNode = SKShapeNode(path: whitePadMiddlePath)
-        whitePadMiddleNode.strokeColor = PAD_INSIDE_COLOR
-        whitePadMiddleNode.fillColor = PAD_INSIDE_COLOR
+        let leftPadStartAngle = degreeToRad(degree: 0 + (PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
+        let leftPadEndAngle = degreeToRad(degree: 0 - (PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
         
-        let whitePadMiddlePhysicsBody = SKPhysicsBody(polygonFrom: whitePadMiddlePath)
-        setDefaultPhysicalProperties(body: whitePadMiddlePhysicsBody, bitmask: PAD_RIGHT_DIRECTED_BITMASK)
-        whitePadMiddleNode.physicsBody = whitePadMiddlePhysicsBody
-        padsContainerNode.addChild(whitePadMiddleNode)
+        let leftPadMiddlePath = createSemicirclePath(width: PAD_WIDTH, startAngle: leftPadStartAngle, endAngle: leftPadEndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS/2, clockwise: true)
         
-        let whitePadBorder2Path = createSemicirclePath(width: PAD_WIDTH, startAngle: whitePadMiddleEndAngle + degreeToRad(degree: 0.3), endAngle: whitePadBorder2EndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        let leftPadMiddleNode = SKShapeNode(path: leftPadMiddlePath)
+        leftPadMiddleNode.strokeColor = PAD_INSIDE_COLOR
+        leftPadMiddleNode.fillColor = PAD_INSIDE_COLOR
         
-        let whitePadBorder2Node = SKShapeNode(path: whitePadBorder2Path)
-        whitePadBorder2Node.strokeColor = PAD_OUTSIDE_COLOR
-        whitePadBorder2Node.fillColor = PAD_OUTSIDE_COLOR
+        leftPadContainerNode.addChild(leftPadMiddleNode)
         
-        let whitePadBorder2PhysicsBody = SKPhysicsBody(polygonFrom: whitePadBorder2Path)
-        setDefaultPhysicalProperties(body: whitePadBorder2PhysicsBody, bitmask: PAD_BITMASK)
-        whitePadBorder2Node.physicsBody = whitePadBorder2PhysicsBody
-        padsContainerNode.addChild(whitePadBorder2Node)
         
-        //////////// black pad
+        //////////// right pad
         
-        let blackPadBorder1StartAngle = degreeToRad(degree: 270-PAD_SIZE/2)
-        let blackPadBorder1EndAngle = degreeToRad(degree: 270-(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
-        let blackPadMiddleEndAngle = degreeToRad(degree: 270+(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
-        let blackPadBorder2EndAngle = degreeToRad(degree: 270+PAD_SIZE/2)
+        let rightPadStartAngle = degreeToRad(degree: 180 - (PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
+        let rightPadEndAngle = degreeToRad(degree: 180 + (PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
         
-        let blackPadBorder1Path = createSemicirclePath(width: PAD_WIDTH, startAngle: blackPadBorder1StartAngle, endAngle: blackPadBorder1EndAngle - degreeToRad(degree: 0.3), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
+        let rightPadMiddlePath = createSemicirclePath(width: PAD_WIDTH, startAngle: rightPadStartAngle, endAngle: rightPadEndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS/2, clockwise: false)
         
-        let blackPadBorder1Node = SKShapeNode(path: blackPadBorder1Path)
-        blackPadBorder1Node.strokeColor = PAD_OUTSIDE_COLOR
-        blackPadBorder1Node.fillColor = PAD_OUTSIDE_COLOR
+        let rightPadMiddleNode = SKShapeNode(path: rightPadMiddlePath)
+        rightPadMiddleNode.strokeColor = PAD_INSIDE_COLOR
+        rightPadMiddleNode.fillColor = PAD_INSIDE_COLOR
         
-        let blackPadBorder1PhysicsBody = SKPhysicsBody(polygonFrom: blackPadBorder1Path)
-        setDefaultPhysicalProperties(body: blackPadBorder1PhysicsBody, bitmask: PAD_RIGHT_DIRECTED_BITMASK)
-        blackPadBorder1Node.physicsBody = blackPadBorder1PhysicsBody
-        padsContainerNode.addChild(blackPadBorder1Node)
+        rightPadContainerNode.addChild(rightPadMiddleNode)
         
-        let blackPadMiddlePath = createSemicirclePath(width: PAD_WIDTH, startAngle: blackPadBorder1EndAngle, endAngle: blackPadMiddleEndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
-        
-        let blackPadMiddleNode = SKShapeNode(path: blackPadMiddlePath)
-        blackPadMiddleNode.strokeColor = PAD_INSIDE_COLOR
-        blackPadMiddleNode.fillColor = PAD_INSIDE_COLOR
-        
-        let blackPadMiddlePhysicsBody = SKPhysicsBody(polygonFrom: blackPadMiddlePath)
-        setDefaultPhysicalProperties(body: blackPadMiddlePhysicsBody, bitmask: PAD_BITMASK)
-        blackPadMiddleNode.physicsBody = blackPadMiddlePhysicsBody
-        padsContainerNode.addChild(blackPadMiddleNode)
-        
-        let blackPadBorder2Path = createSemicirclePath(width: PAD_WIDTH, startAngle: blackPadMiddleEndAngle + degreeToRad(degree: 0.3), endAngle: blackPadBorder2EndAngle, center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: false)
-        
-        let blackPadBorder2Node = SKShapeNode(path: blackPadBorder2Path)
-        blackPadBorder2Node.strokeColor = PAD_OUTSIDE_COLOR
-        blackPadBorder2Node.fillColor = PAD_OUTSIDE_COLOR
-        
-        let blackPadBorder2PhysicsBody = SKPhysicsBody(polygonFrom: blackPadBorder2Path)
-        setDefaultPhysicalProperties(body: blackPadBorder2PhysicsBody, bitmask: PAD_LEFT_DIRECTED_BITMASK)
-        blackPadBorder2Node.physicsBody = blackPadBorder2PhysicsBody
-        padsContainerNode.addChild(blackPadBorder2Node)
-        
-        //
-        
-        ballNode = createBall(p: CIRCLE_CENTER, radius: CIRCLE_RADIUS * BALL_PROPORTION, fillColor: WHITE_SIDE_COLOR, strokeColor: BLACK_SIDE_COLOR)
-        self.addChild(ballNode)
-        //
-        
+        /////////// buttons
         
         let leftButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 180))
         leftButtonNode = createButton(texture : leftButtonReleasedTex, position: CGPoint(x: leftButtonPoint.x, y: leftButtonPoint.y - SCREEN_HEIGHT/3.3), scale: 0.35)
         self.addChild(leftButtonNode)
-    
+        
         let rightButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 0))
-         rightButtonNode = createButton(texture : rightButtonReleasedTex, position: CGPoint(x: rightButtonPoint.x, y: rightButtonPoint.y - SCREEN_HEIGHT/3.3), scale: 0.35)
+        rightButtonNode = createButton(texture : rightButtonReleasedTex, position: CGPoint(x: rightButtonPoint.x, y: rightButtonPoint.y - SCREEN_HEIGHT/3.3), scale: 0.35)
         self.addChild(rightButtonNode)
         
-        spinCounter = -1
-        
-        spinCounterNode = SKLabelNode(text: String(spinCounter))
-        spinCounterNode.position = CGPoint(x: SCREEN_WIDTH/2*(-1), y:SCREEN_HEIGHT/2.5)
-        //spinCounterNode.position = CIRCLE_CENTER
-        spinCounterNode.fontSize = CGFloat(80)
-        spinCounterNode.fontColor = SKColor.black
-        
-        self.addChild(spinCounterNode)
-        
-        let spinsNode = SKLabelNode(text: "spins")
-        spinsNode.position = CGPoint(x: SCREEN_WIDTH/2*(-1), y:SCREEN_HEIGHT/2.5 - 40)
-        //spinsNode.position = CIRCLE_CENTER
-        spinsNode.fontSize = CGFloat(40)
-        spinsNode.fontColor = SKColor.black
-        
-        self.addChild(spinsNode)
-
-        startGame(ballNode: ballNode as SKShapeNode!)
     }
     
     @objc public static override var supportsSecureCoding: Bool {
@@ -259,8 +202,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             movingRight = false
             movingLeft = true
         }
-        //print(movingLeft)
-        //print(movingRight)
         
         lastTouch = touch
         
@@ -295,145 +236,61 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public override func update(_ currentTime: TimeInterval) {
-        var currentZRotation = mainNode.zRotation
-        currentZRotation -= degreeToRad(degree: MAIN_NODE_ROTATION)
-        if (currentZRotation <= 0) {
-            currentZRotation = degreeToRad(degree: 360);
-            spinCounter += 1
-            spinCounterNode.text = String(spinCounter)
-        }
-        mainNode.zRotation = currentZRotation
         
-        if movingLeft {
-            if padsContainerNode.zRotation - degreeToRad(degree: PAD_STEP) > minPadsZRotation {
-                padsContainerNode.zRotation -= degreeToRad(degree: PAD_STEP)
+        if movingLeft && leftPadContainerNode.zRotation > degreeToRad(degree: -180)  {
+            leftPadContainerNode.zRotation -= degreeToRad(degree: PAD_STEP)
+            rightPadContainerNode.zRotation -= degreeToRad(degree: PAD_STEP)
+        } else if movingRight && leftPadContainerNode.zRotation < degreeToRad(degree: 0) {
+            leftPadContainerNode.zRotation += degreeToRad(degree: PAD_STEP)
+            rightPadContainerNode.zRotation += degreeToRad(degree: PAD_STEP)
+        }
+        
+        if !hasCompletedBlackPart {
+            if leftPadContainerNode.zRotation < 0 {
+                let leftArcPath = createSemicirclePath(width: 1, startAngle: degreeToRad(degree: 0), endAngle: leftPadContainerNode.zRotation, center: whiteBumperNode.position, radius: CIRCLE_RADIUS/2, clockwise: true)
+                
+                leftArcNode.removeFromParent()
+                
+                leftArcNode = SKShapeNode(path: leftArcPath)
+                leftArcNode.strokeColor = BORDER_COLOR
+                leftArcNode.fillColor = BORDER_COLOR
+                
+                leftArcNode.zPosition = -1
+                
+                mainNode.addChild(leftArcNode)
+                
+                let rightArcPath = createSemicirclePath(width: 1, startAngle: degreeToRad(degree: 180), endAngle: degreeToRad(degree: 180) + rightPadContainerNode.zRotation, center: blackBumperNode.position, radius: CIRCLE_RADIUS/2, clockwise: true)
+                
+                rightArcNode.removeFromParent()
+                
+                rightArcNode = SKShapeNode(path: rightArcPath)
+                rightArcNode.strokeColor = BORDER_COLOR
+                rightArcNode.fillColor = BORDER_COLOR
+                
+                rightArcNode.zPosition = -1
+                
+                mainNode.addChild(rightArcNode)
             }
-        } else if movingRight {
-            if padsContainerNode.zRotation + degreeToRad(degree: PAD_STEP) < maxPadsZRotation {
-                padsContainerNode.zRotation += degreeToRad(degree: PAD_STEP)
+
+
+            if leftPadContainerNode.zRotation <= degreeToRad(degree: -180)  {
+                hasCompletedBlackPart = true
+                PlaygroundPage.current.assessmentStatus = .pass(message: "This is the Yin Yang. Wondering how it will turn into YingPong...")
+                self.showObjects()
             }
-        }
+         
+         }
         
-        let speed = getBallSpeed(v: (ballNode.physicsBody?.velocity)!)
-        
-        if speed <= 10 && !mainNode.contains(ballNode.position) { // caso reset
-            ballNode.run(SKAction.fadeIn(withDuration: 0.5))
-            ballNode.physicsBody?.linearDamping = 0.0
-            ballNode.position = CGPoint(x: 0, y: 0)
-            rightArcNode.position = originalRightBorderPosition
-            leftArcNode.position = originalLeftBorderPosition
-            currentBallSpeedFactor = 1
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                generateRandomBallMovement(ballNode: ballNode)
-            })
-        } else if speed > 105 && !mainNode.contains(ballNode.position) { // caso saia, desacelera
-            MAIN_NODE_ROTATION = max(MAIN_NODE_ROTATION/2.5, MAIN_NODE_ROTATION_ORIGINAL)
-            ballNode.physicsBody?.linearDamping = 0.96
-            accelerateBall(ball: ballNode.physicsBody!, proportion : CGFloat(100/speed))
-            ballNode.run(SKAction.fadeOut(withDuration: 1.2))
-        }
-        
-        MAIN_NODE_ROTATION += MAIN_NODE_ROTATION_INCREMENT
     }
     
-    public func didBegin(_ contact: SKPhysicsContact) {
+    public func showObjects() {
+        let fadeInAction = SKAction.fadeIn(withDuration: 3.5)
         
-        var currentBallVelocity = CGVector(dx: -1, dy: -1)
-        var speed = CGFloat(-1)
+        whiteBumperNode.run(fadeInAction)
+        blackBumperNode.run(fadeInAction)
+        blackSideNode.run(fadeInAction)
         
-        /*if (contact.bodyA.contactTestBitMask == BALL_BITMASK)
-            ||  (contact.bodyB.contactTestBitMask == BALL_BITMASK) {
-            var currentBallVelocity = ballNode.physicsBody!.velocity
-            var speed = getBallSpeed(v: currentBallVelocity)
-            print("previous speed: ", speed)
-            print("previous ballVelocity: ", currentBallVelocity)
-        }*/
-        
-        if (contact.bodyA.contactTestBitMask == BALL_BITMASK) &&
-            (contact.bodyB.contactTestBitMask == PAD_LEFT_DIRECTED_BITMASK)
-            ||  (contact.bodyB.contactTestBitMask == BALL_BITMASK) &&
-            (contact.bodyA.contactTestBitMask == PAD_LEFT_DIRECTED_BITMASK) {
-            
-            let ball = contact.bodyB.contactTestBitMask == BALL_BITMASK ? contact.bodyB : contact.bodyA;
-            let pad = contact.bodyB.contactTestBitMask == BALL_BITMASK ? contact.bodyA : contact.bodyB;
-            
-            let contactPoint = contact.contactPoint
-            
-            let target = CGPoint(x: whiteBumperNode.position.x - contactPoint.x,
-                                 y: whiteBumperNode.position.y - contactPoint.y)
-            
-            print(" PAD HIT!")
-            
-            directBallTo(ball: ball, p: target)
-            accelerateBall(ball: ball, proportion: (STARTING_BALL_SPEED * currentBallSpeedFactor / getBallSpeed(v: ball.velocity)))
-            
-     
-            playSoundEffect(mainNode: self, fileName: "Teco.mp3", volume: 0.5)
-            
-        } else if (contact.bodyA.contactTestBitMask == BALL_BITMASK) &&
-            (contact.bodyB.contactTestBitMask == PAD_RIGHT_DIRECTED_BITMASK)
-            ||  (contact.bodyB.contactTestBitMask == BALL_BITMASK) &&
-            (contact.bodyA.contactTestBitMask == PAD_RIGHT_DIRECTED_BITMASK) {
-            
-            let ball = contact.bodyB.contactTestBitMask == BALL_BITMASK ? contact.bodyB : contact.bodyA;
-            let pad = contact.bodyB.contactTestBitMask == BALL_BITMASK ? contact.bodyA : contact.bodyB;
-            
-            let contactPoint = contact.contactPoint
-            
-            let target = CGPoint(x: blackBumperNode.position.x - contactPoint.x,
-                                 y: blackBumperNode.position.y - contactPoint.y)
-            
-            directBallTo(ball: ball, p: target)
-            accelerateBall(ball: ball, proportion: (STARTING_BALL_SPEED * currentBallSpeedFactor / getBallSpeed(v: ball.velocity)))
-        
-            playSoundEffect(mainNode: self, fileName: "Teco.mp3", volume: 0.5)
-            
-        } else if (contact.bodyA.contactTestBitMask == BALL_BITMASK) &&
-            (contact.bodyB.contactTestBitMask == BUMPER_BITMASK)
-            ||  (contact.bodyB.contactTestBitMask == BALL_BITMASK) &&
-            (contact.bodyA.contactTestBitMask == BUMPER_BITMASK) {
-            
-            let ball = contact.bodyB.contactTestBitMask == BALL_BITMASK ? contact.bodyB : contact.bodyA;
-            let bumper = contact.bodyB.contactTestBitMask == BALL_BITMASK ? contact.bodyA : contact.bodyB;
-            
-            print(" BUMPER HIT!")
-            
-            accelerateBall(ball: ball, proportion: CGFloat(BUMPER_SPEED_FACTOR))
-            
-            createBumperWave(bumper: bumper.node as! SKShapeNode)
-            currentBallSpeedFactor *= BUMPER_SPEED_FACTOR
-            
-            accelerateBall(ball: ball, proportion: (STARTING_BALL_SPEED * currentBallSpeedFactor / getBallSpeed(v: ball.velocity)))
-            
-            if (bumper.node == whiteBumperNode) {
-                playSoundEffect(mainNode: self, fileName: "TimpanoAgudo.mp3", volume: 1)
-            } else {
-                playSoundEffect(mainNode: self, fileName: "TimpanoGrave.mp3", volume: 1)
-            }
-
-            
-        } else if (contact.bodyA.contactTestBitMask == BALL_BITMASK) &&
-            (contact.bodyB.contactTestBitMask == BUMPER_BITMASK)
-            ||  (contact.bodyB.contactTestBitMask == BALL_BITMASK) &&
-            (contact.bodyA.contactTestBitMask == BUMPER_BITMASK) {
-            
-            let ball = contact.bodyB.contactTestBitMask == BALL_BITMASK ? contact.bodyB : contact.bodyA;
-            let bumper = contact.bodyB.contactTestBitMask == BALL_BITMASK ? contact.bodyA : contact.bodyB;
-            
-            print(" WALL HIT!")
-            accelerateBall(ball: ball, proportion: (STARTING_BALL_SPEED * currentBallSpeedFactor / getBallSpeed(v: ball.velocity)))
-        }
-        
-        
-
-        
-        /*if (contact.bodyA.contactTestBitMask == BALL_BITMASK)
-            ||  (contact.bodyB.contactTestBitMask == BALL_BITMASK) {
-            currentBallVelocity = ballNode.physicsBody!.velocity
-            speed = getBallSpeed(v: currentBallVelocity)
-            print("new speed: ", speed)
-            print("new ballVelocity: ", currentBallVelocity)
-            print(" ")
-        }*/
+        rightArcNode.run(SKAction.fadeOut(withDuration: 2.5))
+        leftArcNode.run(SKAction.fadeOut(withDuration: 2.5))
     }
 }
