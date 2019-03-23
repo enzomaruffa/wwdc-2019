@@ -423,17 +423,5 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             print(" WALL HIT!")
             accelerateBall(ball: ball, proportion: (STARTING_BALL_SPEED * currentBallSpeedFactor / getBallSpeed(v: ball.velocity)))
         }
-        
-        
-
-        
-        /*if (contact.bodyA.contactTestBitMask == BALL_BITMASK)
-            ||  (contact.bodyB.contactTestBitMask == BALL_BITMASK) {
-            currentBallVelocity = ballNode.physicsBody!.velocity
-            speed = getBallSpeed(v: currentBallVelocity)
-            print("new speed: ", speed)
-            print("new ballVelocity: ", currentBallVelocity)
-            print(" ")
-        }*/
     }
 }

@@ -14,6 +14,25 @@ if let scene = GameScene(fileNamed: "GameScene") {
     scene.backgroundColor = ICE_WHITE
     scene.scaleMode = .aspectFill
     
+    var motion = false
+    var life = false
+    //#-end-hidden-code
+    
+
+    //#-editable-code
+    motion = false
+    life = false
+    //#-end-editable-code
+
+    //#-hidden-code 
+
+    if motion {
+        scene.addMotion()
+    }
+
+    if life {
+        scene.addLife()
+    }
     
     // Present the scene
     sceneView.presentScene(scene)

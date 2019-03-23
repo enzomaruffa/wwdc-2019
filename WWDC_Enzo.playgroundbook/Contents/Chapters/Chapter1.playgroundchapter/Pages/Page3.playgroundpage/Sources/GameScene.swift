@@ -16,9 +16,20 @@ var originalLeftBorderPosition : CGPoint!
 
 var currentBallSpeedFactor = CGFloat(1)
 
+var motion = false
+var life = false
+
 public var MAIN_NODE_ROTATION = MAIN_NODE_ROTATION_ORIGINAL
 
 public class GameScene: SKScene, SKPhysicsContactDelegate {
+
+    public func addMotion() {
+        motion = true
+    }
+
+    public func addLife() {
+        life = true
+    }
     
     public override func didMove(to view: SKView) {
         // Get label node from scene and store it for use later
@@ -39,7 +50,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         mainNode.addChild(blackSideNode)
         
         //
-        let rightPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 0+BORDER_SIZE/2), endAngle: degreeToRad(degree: 0-BORDER_SIZE/2), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
+
+        var border = life ? BORDER_SIZE : 180
+
+        let rightPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 0+border/2), endAngle: degreeToRad(degree: 0-border/2), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
         
         rightArcNode = SKShapeNode(path: rightPath)
         rightArcNode.strokeColor = BORDER_COLOR
@@ -52,7 +66,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         rightArcNode.physicsBody = rightPathPhysicsBody
         mainNode.addChild(rightArcNode)
         
-        let leftPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 180+BORDER_SIZE/2), endAngle: degreeToRad(degree: 180-BORDER_SIZE/2), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
+        let leftPath = createSemicirclePath(width: ARC_WIDTH, startAngle: degreeToRad(degree: 180+border/2), endAngle: degreeToRad(degree: 180-border/2), center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, clockwise: true)
         
         leftArcNode = SKShapeNode(path: leftPath)
         leftArcNode.strokeColor = BORDER_COLOR
@@ -64,6 +78,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         setDefaultPhysicalProperties(body: leftPathPhysicsBody, bitmask: BORDER_BITMASK)
         leftArcNode.physicsBody = leftPathPhysicsBody
         mainNode.addChild(leftArcNode)
+        
         
         //
         
@@ -124,12 +139,14 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public override func update(_ currentTime: TimeInterval) {
-        var currentZRotation = mainNode.zRotation
-        currentZRotation -= degreeToRad(degree: MAIN_NODE_ROTATION)
-        if (currentZRotation <= 0) {
-            currentZRotation = degreeToRad(degree: 360);
+        if motion {
+            var currentZRotation = mainNode.zRotation
+            currentZRotation -= degreeToRad(degree: MAIN_NODE_ROTATION)
+            if (currentZRotation <= 0) {
+                currentZRotation = degreeToRad(degree: 360);
+            }
+            mainNode.zRotation = currentZRotation
         }
-        mainNode.zRotation = currentZRotation
         
         let speed = getBallSpeed(v: (ballNode.physicsBody?.velocity)!)
         
@@ -239,17 +256,5 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             print(" WALL HIT!")
             accelerateBall(ball: ball, proportion: (STARTING_BALL_SPEED * currentBallSpeedFactor / getBallSpeed(v: ball.velocity)))
         }
-        
-        
-
-        
-        /*if (contact.bodyA.contactTestBitMask == BALL_BITMASK)
-            ||  (contact.bodyB.contactTestBitMask == BALL_BITMASK) {
-            currentBallVelocity = ballNode.physicsBody!.velocity
-            speed = getBallSpeed(v: currentBallVelocity)
-            print("new speed: ", speed)
-            print("new ballVelocity: ", currentBallVelocity)
-            print(" ")
-        }*/
     }
 }
