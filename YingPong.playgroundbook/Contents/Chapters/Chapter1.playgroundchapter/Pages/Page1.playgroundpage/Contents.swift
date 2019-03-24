@@ -10,7 +10,9 @@
  
  We will get there soon enough! First, we need to talk about _mu_
  
- ## _Mu_
+ ---
+ 
+ # _Mu_
  
  Roughly translated, _mu_ means "not have; without". It's a keyword in Zen Buddhism traditions.
  
@@ -29,6 +31,9 @@
  We'll do a bit different, though. I would like you to use the purple pad and control buttons to draw a circle on our little screen to the right. You'll get the hang of it.
  
  Once you have done it, feel free to appreciate it. Stare into it for a bit, but don't overthink it. Actually, don't think about it. Just stare, and stare. Nothingness isn't!
+ 
+
+ - Note: For a proper experience, use your iPad on landscape mode and, after reading this text, hide it. We'll be using the full view :)
  
  */
 

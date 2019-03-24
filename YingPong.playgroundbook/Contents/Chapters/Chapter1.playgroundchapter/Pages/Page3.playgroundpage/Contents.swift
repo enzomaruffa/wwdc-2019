@@ -1,8 +1,8 @@
 
 
-/*: ## Motion vs Stillness: balance requires changes
+/*: # Motion vs Stillness: balance requires changes
  
-Great! Now we know how everything has two sides - and although they may seem opposite, they are rather *complimentary*. One can't exist without the other.
+Awesome! Now we know how everything has two sides - and although they may seem opposite, they are rather *complimentary*. One can't exist without the other.
  
  So, it seems like a logical step that we try to balance stuff. It shouldn't be hot or cold: why can't we have a temperature that is between these extremes?
  
@@ -19,6 +19,10 @@ Great! Now we know how everything has two sides - and although they may seem opp
  I want you to see a concept that has two sides in the place of that ball. It can be anything you would like: temperature? your emotions? It's your call.
  
  Do it. Then come back here :)
+ 
+ - Note: For a proper experience, use your iPad on landscape. This time, it's ok not to hide the view.
+ 
+ ---
  
  */
 
@@ -48,6 +52,8 @@ if let scene = GameScene(fileNamed: "GameScene") {
     
 /*:
      
+     ---
+     
      When we add motion, we add the fact that we can't control everything. Some of them just go beyond our area of influence. And see, that's ok! Life is about dealing with these situations.
      
      Since we are talking about the influence of our lives: well, some things just blow their own systems - they go way ahead (and we are not talking about good or bad) of what they should be. Especially, our emotions. Nowadays, lots of mental conditions are all about how we can't fully understand that we do not control eveything, and that makes us shocked!
@@ -66,6 +72,10 @@ if let scene = GameScene(fileNamed: "GameScene") {
 
     if life {
         scene.addLife()
+    }
+    
+    if motion && life {
+        PlaygroundPage.current.assessmentStatus = .pass(message: "Life and motion. Two concepts in the universe. Are you ready to fully understand the YingPong?")
     }
     
     // Present the scene

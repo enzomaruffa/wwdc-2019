@@ -5,9 +5,9 @@
 	<key>Version</key>
 	<string>1.0</string>
 	<key>Name</key>
-	<string>Game</string>
+	<string>Motion and life</string>
 	<key>Description</key>
-	<string>glublgub</string>
+	<string>Dealing with changes: a constant in our lives</string>
 	<key>LiveViewMode</key>
 	<string>VisibleByDefault</string>
 </dict>

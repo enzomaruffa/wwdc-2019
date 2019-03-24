@@ -1,5 +1,5 @@
 
-/*: ## The Yin and Yang
+/*: # The Yin and Yang
 
 Now that we have a perception about _mu_, it's time to see another symbol's importance!
  
@@ -19,6 +19,8 @@ Now that we have a perception about _mu_, it's time to see another symbol's impo
  
  Once you are done, feel free to go to the next page. We'll talk about balance.
 
+ - Note: For a proper experience, use your iPad on landscape mode and, after reading this text, hide it. We'll be using the full view :)
+ 
 */
 
 //#-hidden-code

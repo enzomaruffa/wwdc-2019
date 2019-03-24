@@ -5,9 +5,9 @@
 	<key>Version</key>
 	<string>1.0</string>
 	<key>Name</key>
-	<string>NOME_DA_PAGINA</string>
+	<string>Duality</string>
 	<key>Description</key>
-	<string>DESCRICAO_DA_PAGINA</string>
+	<string>Everything has two sides</string>
 	<key>LiveViewMode</key>
 	<string>VisibleByDefault</string>
 </dict>

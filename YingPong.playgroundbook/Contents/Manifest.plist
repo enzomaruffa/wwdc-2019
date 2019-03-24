@@ -11,11 +11,11 @@
 	<key>ContentVersion</key>
 	<string>1.0</string>
 	<key>Name</key>
-	<string>aindanaosei</string>
+	<string>YingPong</string>
 	<key>Description</key>
 	<string>A playgroundbook about harmony.</string>
 	<key>ContentIdentifier</key>
-	<string>com.nomedoseuprojeto</string>
+	<string>com.yingpong</string>
 	<key>DeploymentTarget</key>
 	<string>ios10.3</string>
 	<key>Chapters</key>

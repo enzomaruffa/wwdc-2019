@@ -9,6 +9,8 @@
  
  Don't forget: the most important part of the journey is to enjoy it. Be happy and search for harmony :)
  
+ - Note: For a proper experience, use your iPad on landscape mode and, after reading this text, hide it. We'll be using the full view :)
+ 
  */
 
 //#-hidden-code
