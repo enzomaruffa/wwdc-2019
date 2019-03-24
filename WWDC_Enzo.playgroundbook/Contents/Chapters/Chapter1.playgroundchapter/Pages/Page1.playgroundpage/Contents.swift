@@ -1,7 +1,7 @@
 
 /*:
  
- # Balance
+ # Balance and Harmony
  
  We work hard towards whatever we think fulfill us.
  And that is completely fair!
@@ -10,9 +10,9 @@
  
  We will get there soon enough! First, we need to talk about _mu_
  
- # _Mu_
+ ## _Mu_
  
- Roughly translated, _mu_ means "not have; without". It's a keyword in Zen traditions.
+ Roughly translated, _mu_ means "not have; without". It's a keyword in Zen Buddhism traditions.
  
  The concept behind seems kinda simple: "nothingness", or "the absence of"
  
@@ -20,11 +20,11 @@
  
  Once you see something, hear a word or a sound or even think about anything, you are somehow applying your experience and perceptions over it. How can you truly understand something by itself? Without **any** previous judgement?
  
- Welp, it's almost impossible. And that's ok.
+ Well, it's almost impossible. And that's ok.
  
  See, how can we picture "nothingness"? You may think about an empty white canvas, but it's a white canvas nonetheless!
  
- It's often visual representation is a black circle, hand-drawn in a single stroke: an _ensō_
+ It's often visual representation is a black circle, hand-drawn in a single stroke: an _ensō_ - a japanese wordß
  
  We'll do a bit different, though. I would like you to use the purple pad and control buttons to draw a circle on our little screen to the right. You'll get the hang of it.
  
