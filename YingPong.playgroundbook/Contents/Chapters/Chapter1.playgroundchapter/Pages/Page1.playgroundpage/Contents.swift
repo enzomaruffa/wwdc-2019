@@ -20,15 +20,15 @@
  
  Although _mu_ has this apparent simplicty, _mu_ is completely symbolic. That means that it's really, really difficult to express what it means in words - or even properly think about it.
  
- Once you see something, hear a word or a sound or even think about anything, you are somehow applying your experience and perceptions over it. How can you truly understand something by itself? Without **any** previous judgement?
+ Once you see something, hear a word or a sound or even think about anything, **you are somehow applying your experience and perceptions over it**. How can you truly understand something by itself? Without **any** previous judgement?
  
- Well, it's almost impossible. And that's ok.
+ **Well, it's almost impossible. And that's ok.**
  
- See, how can we picture "nothingness"? You may think about an empty white canvas, but it's a white canvas nonetheless!
+ **See, how can we picture "nothingness"?*** You may think about an empty white canvas, but it's a white canvas nonetheless!
  
  It's often visual representation is a black circle, hand-drawn in a single stroke: an _ensō_ - a japanese word
  
- We'll do a bit different, though. I would like you to use the purple pad and control buttons to draw a circle on our little screen to the right. You'll get the hang of it.
+ We'll do a bit different, though. I would like you to use the **purple pad and control buttons** to draw a circle on our little screen to the right. You'll get the hang of it.
  
  Once you have done it, feel free to appreciate it. Stare into it for a bit, but don't overthink it. Actually, don't think about it. Just stare, and stare. Nothingness isn't!
  
