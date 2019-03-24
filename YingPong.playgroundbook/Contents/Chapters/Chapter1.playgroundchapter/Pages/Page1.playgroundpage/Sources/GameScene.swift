@@ -2,6 +2,7 @@ import Foundation
 import PlaygroundSupport
 import SpriteKit
 
+// Page elements
 var mainNode : SKShapeNode!
 var padContainerNode : SKShapeNode!
 
@@ -15,6 +16,7 @@ var rightButtonPressedTex : SKTexture!
 
 var arcNode : SKShapeNode!
 
+// Last touch object, so we can properly use multitouch
 var lastTouch : UITouch!
 
 var movingLeft = false
@@ -25,7 +27,6 @@ var hasCompletedCircle = false
 public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public override func didMove(to view: SKView) {
-        // Get label node from scene and store it for use later
         
         leftButtonReleasedTex = SKTexture(imageNamed: "counterClockWiseReleased.png")
         rightButtonReleasedTex = SKTexture(imageNamed: "clockWiseReleased.png")
@@ -40,11 +41,12 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(mainNode)
         
         //
+        // Placeholder for the final arc node
         arcNode = SKShapeNode(circleOfRadius: 0)
         mainNode.addChild(arcNode)
 
 
-        //////////// pad container node
+        // Creation of the pad container node
         
         let origin = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.2, center: CIRCLE_CENTER, angle: degreeToRad(degree: 270 - PAD_SIZE/2))
         let end = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.2, center: CIRCLE_CENTER, angle: degreeToRad(degree: 90 - PAD_SIZE/2))
@@ -55,7 +57,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         padContainerNode.strokeColor = SKColor.clear
         mainNode.addChild(padContainerNode)
         
-        //////////// pad
+        // Creating of the pad node
         
         let padStartAngle = degreeToRad(degree: 90-(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
         let padEndAngle = degreeToRad(degree: 90+(PAD_SIZE/2)*(PAD_CENTRAL_PROPORTION))
@@ -68,7 +70,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         padContainerNode.addChild(padMiddleNode)
         
-        //////////// buttons
+        // Buttons are created relative to the circle center, which sits in the middle of the screen
         
         let leftButtonPoint = getCirclePointByAngle(radius: CIRCLE_RADIUS*1.7, center: CIRCLE_CENTER, angle: degreeToRad(degree: 180))
         leftButtonNode = createButton(texture : leftButtonReleasedTex, position: CGPoint(x: leftButtonPoint.x, y: leftButtonPoint.y - SCREEN_HEIGHT/3.3), scale: 0.35)
@@ -178,7 +180,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if padContainerNode.zRotation <= degreeToRad(degree: 360) * -1 || padContainerNode.zRotation >= degreeToRad(degree: 360)  {
                 hasCompletedCircle = true
-                PlaygroundPage.current.assessmentStatus = .pass(message: "Great! Let's move on :) [Next @next]")
+                PlaygroundPage.current.assessmentStatus = .pass(message: "Great! Let's move on :) (Next @next)")
             }
             
         }

@@ -1,5 +1,7 @@
 
-/*: ## Control
+/*:
+ 
+ # Control
  
  Now, we'll play a little game. I hope that you have a better understanding about how we, as human beings, must accept some tough - yet very valuable - unspoken facts.
  
@@ -7,7 +9,7 @@
  
  But beware, life might keep presenting you new challenges. Or you may have less time to spend on evaluating decisions? Huh, guess I've just spoiled something...
  
- Don't forget: the most important part of the journey is to enjoy it. Be happy and search for harmony :)
+ Don't forget: the most important part of the journey is to enjoy it. Be happy and live with harmony :)
  
  - Note: For a proper experience, use your iPad on landscape mode and, after reading this text, hide it. We'll be using the full view :)
  
@@ -33,7 +35,7 @@ if let scene = GameScene(fileNamed: "GameScene") {
     // Present the scene
     sceneView.presentScene(scene)
     //sceneView.showsPhysics = true
-    sceneView.showsFPS = true
+    //sceneView.showsFPS = true
     sceneView.isMultipleTouchEnabled = true
     //sceneView.showsFields = true
     

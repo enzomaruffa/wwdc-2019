@@ -1,6 +1,7 @@
 
-
-/*: # Motion vs Stillness: balance requires changes
+/*:
+ 
+ # Motion vs Stillness: balance requires changes
  
 Awesome! Now we know how everything has two sides - and although they may seem opposite, they are rather *complimentary*. One can't exist without the other.
  
@@ -20,9 +21,7 @@ Awesome! Now we know how everything has two sides - and although they may seem o
  
  Do it. Then come back here :)
  
- - Note: For a proper experience, use your iPad on landscape. This time, it's ok not to hide the view.
- 
- ---
+- Note: For a proper experience, use your iPad on landscape. This time, it's ok not to hide the view.
  
  */
 
@@ -41,30 +40,27 @@ if let scene = GameScene(fileNamed: "GameScene") {
     
     var motion = false
     var life = false
-    //#-end-hidden-code
 
-    //: See this little code below? See what happens when you set these variables to true (replacing "false" with "true" and running the code again). Come back here then :)
+//#-end-hidden-code
+
+//: See this little code below? See what happens when you set these variables to true (replacing "false" with "true" and running the code again). Come back here then :)
     
-    //#-editable-code
-    motion = false
-    life = false
-    //#-end-editable-code
+motion = /*#-editable-code */ false /* #-end-editable-code */
+life = /*#-editable-code */ false /* #-end-editable-code */
     
 /*:
      
-     ---
-     
-     When we add motion, we add the fact that we can't control everything. Some of them just go beyond our area of influence. And see, that's ok! Life is about dealing with these situations.
-     
-     Since we are talking about the influence of our lives: well, some things just blow their own systems - they go way ahead (and we are not talking about good or bad) of what they should be. Especially, our emotions. Nowadays, lots of mental conditions are all about how we can't fully understand that we do not control eveything, and that makes us shocked!
-     
-     However, understanding ourselves is a fundamental step in reducind how these situations affects us.
-     
-     Let us continue on our next and last page.
+ When we add motion, we add the fact that we can't control everything. Some of them just go beyond our area of influence. And see, that's ok! Life is about dealing with these situations.
+ 
+ Since we are talking about the influence of our lives: well, some things just blow their own systems - they go way ahead (and we are not talking about good or bad) of what they should be. Especially, our emotions. Nowadays, lots of mental conditions are all about how we can't fully understand that we do not control eveything, and that makes us shocked!
+ 
+ However, understanding ourselves is a fundamental step in reducind how these situations affects us.
+ 
+ Let us continue on our next and last page.
  
  */
 
-    //#-hidden-code 
+//#-hidden-code
 
     if motion {
         scene.addMotion()
@@ -81,7 +77,7 @@ if let scene = GameScene(fileNamed: "GameScene") {
     // Present the scene
     sceneView.presentScene(scene)
     //sceneView.showsPhysics = true
-    sceneView.showsFPS = true
+    //sceneView.showsFPS = true
     sceneView.isMultipleTouchEnabled = true
     //sceneView.showsFields = true
     

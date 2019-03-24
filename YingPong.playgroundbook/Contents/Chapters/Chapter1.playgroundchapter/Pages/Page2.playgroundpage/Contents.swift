@@ -1,5 +1,7 @@
 
-/*: # The Yin and Yang
+/*:
+ 
+ # The Yin and Yang
 
 Now that we have a perception about _mu_, it's time to see another symbol's importance!
  
@@ -40,7 +42,7 @@ if let scene = GameScene(fileNamed: "GameScene") {
     // Present the scene
     sceneView.presentScene(scene)
     //sceneView.showsPhysics = true
-    sceneView.showsFPS = true
+    //sceneView.showsFPS = true
     sceneView.isMultipleTouchEnabled = true
     //sceneView.showsFields = true
     
