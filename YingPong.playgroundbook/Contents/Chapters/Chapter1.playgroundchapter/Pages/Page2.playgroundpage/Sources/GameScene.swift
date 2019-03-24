@@ -275,7 +275,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
 
             if leftPadContainerNode.zRotation <= degreeToRad(degree: -180)  {
                 hasCompletedBlackPart = true
-                PlaygroundPage.current.assessmentStatus = .pass(message: "This is the Yin Yang. Wondering how it will turn into YingPong...")
+                PlaygroundPage.current.assessmentStatus = .pass(message: "This is the Yin Yang. Wondering how it will turn into YingPong... [Next page!](@next)")
                 self.showObjects()
             }
          

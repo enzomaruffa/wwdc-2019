@@ -180,7 +180,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if padContainerNode.zRotation <= degreeToRad(degree: 360) * -1 || padContainerNode.zRotation >= degreeToRad(degree: 360)  {
                 hasCompletedCircle = true
-                PlaygroundPage.current.assessmentStatus = .pass(message: "Great! Let's move on :) (Next @next)")
+                PlaygroundPage.current.assessmentStatus = .pass(message: "Great! Let's move on :) [Next page!](@next)")
             }
             
         }

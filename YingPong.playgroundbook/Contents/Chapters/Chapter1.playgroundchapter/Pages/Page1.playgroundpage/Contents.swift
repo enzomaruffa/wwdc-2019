@@ -26,7 +26,7 @@
  
  See, how can we picture "nothingness"? You may think about an empty white canvas, but it's a white canvas nonetheless!
  
- It's often visual representation is a black circle, hand-drawn in a single stroke: an _ensō_ - a japanese wordß
+ It's often visual representation is a black circle, hand-drawn in a single stroke: an _ensō_ - a japanese word
  
  We'll do a bit different, though. I would like you to use the purple pad and control buttons to draw a circle on our little screen to the right. You'll get the hang of it.
  

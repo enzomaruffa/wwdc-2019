@@ -18,6 +18,8 @@
 	<string>com.yingpong</string>
 	<key>DeploymentTarget</key>
 	<string>ios10.3</string>
+	<key>ImageReference</key>
+	<string>logo.png</string>
 	<key>Chapters</key>
 	<array>
 		<string>Chapter1.playgroundchapter</string>

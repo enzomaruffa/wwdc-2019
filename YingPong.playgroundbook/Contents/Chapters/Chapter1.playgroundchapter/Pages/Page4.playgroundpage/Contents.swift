@@ -5,7 +5,7 @@
  
  Now, we'll play a little game. I hope that you have a better understanding about how we, as human beings, must accept some tough - yet very valuable - unspoken facts.
  
- In this game, I want you to not let the ball - that experience that I've asked you to think about before - blow out. You'll control our good ol' purple pads, just like you did before.
+ In this game, I want you to not let the ball - that experience that I've asked you to think about before - escape from our "normal" zones and behaviors. You'll control our good ol' purple pads, just like you did before.
  
  But beware, life might keep presenting you new challenges. Or you may have less time to spend on evaluating decisions? Huh, guess I've just spoiled something...
  

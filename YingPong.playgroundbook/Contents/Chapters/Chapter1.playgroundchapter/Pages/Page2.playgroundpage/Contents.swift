@@ -17,7 +17,7 @@ Now that we have a perception about _mu_, it's time to see another symbol's impo
  
  The Yin Yang is a symbol that represents this duality really well. We have two sides - the bright and the dark one. However, a piece of brightness can be seen on the dark side, and so is the opposite. This is a visual representation of the fact that they are the same thing!
  
- I would like you to drawn an Yin Yang. It'll be rather easy, trust me. I'll do all the painting!
+ I would like you to drawn a Yin Yang. It'll be rather easy, trust me. I'll do all the painting!
  
  Once you are done, feel free to go to the next page. We'll talk about balance.
 
