@@ -169,15 +169,15 @@ public func getBallSpeed(v:CGVector) -> CGFloat {
 }
 
 public func playSoundEffect(mainNode:SKNode, fileName: String, volume: Float) {
-    var pling : SKAudioNode
-    pling = SKAudioNode(fileNamed: fileName)
-    pling.autoplayLooped = false
-    pling.run(SKAction.changeVolume(to: volume, duration: 0))
-    mainNode.addChild(pling)
-    pling.run(SKAction.play())
+    var soundNode : SKAudioNode
+    soundNode = SKAudioNode(fileNamed: fileName)
+    soundNode.autoplayLooped = false
+    soundNode.run(SKAction.changeVolume(to: volume, duration: 0))
+    mainNode.addChild(soundNode)
+    soundNode.run(SKAction.play())
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
-        pling.removeFromParent()
+        soundNode.removeFromParent()
     })
     
 }
